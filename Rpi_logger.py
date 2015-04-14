@@ -2,6 +2,9 @@ import OBD_IO
 import obd_sensors
 import time
 import datetime
+import gpsdData
+#gps = gpsdData.GpsPoller()
+#print ("test:   : " + gps.getLong())
 obd = OBD_IO.OBDPort("/dev/pts/1", 1, 5)
 inner = ""
 
