@@ -85,7 +85,7 @@ def hex_to_bitstring(str):
     for i in str:
         # silly type safety, we don't want to eval random stuff
         if type(i) == type(''): 
-            v = eval("0x%s" % i)
+            v = eval("%s" % i)
             if v & 8 :
                 bitstring += '1'
             else:
