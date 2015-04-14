@@ -13,6 +13,6 @@ for i in range (20):
 
     for i in range (32):
        seq += "[" + obd_sensors.SENSORS[i].shortname + ": " + str(obd.get_sensor_value(obd_sensors.SENSORS[i])) + " " + obd_sensors.SENSORS[i].unit  + "]"
-       print(seq)
-       seq = ""
+    print(seq)
+    seq = ""
 print("Sucess!")
