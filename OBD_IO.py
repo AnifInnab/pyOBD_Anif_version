@@ -56,7 +56,13 @@ class OBDPort:
          print("ate0 response:" + self.get_result())
          self.send_command("0100")
          ready = self.get_result()
-         
+         test = '10101011101001010101010100101010'
+         self.PIDSSupported = False*32
+         for i in range (32):
+             #str(obd.get_sensor_value(obd_sensors.SENSORS[0]))[i]
+            if test[i] == '1':
+                PIDSSupported[i] = True
+
          if(ready is None):
             self.State = 0
             return None
