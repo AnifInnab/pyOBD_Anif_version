@@ -24,8 +24,7 @@ class OBDPort:
          self.ELMver = "Unknown"
          self.State = 1 #state SERIAL is 1 connected, 0 disconnected (connection failed)
          self.port = None
-         self.PIDSSupported = []
-         self.PIDSSupported = False*32
+         
 
          print("Opening interface (serial port)")
 
@@ -58,11 +57,7 @@ class OBDPort:
          print("ate0 response:" + self.get_result())
          self.send_command("0100")
          ready = self.get_result()
-         test = '10101011101001010101010100101010'
-         for i in range (32):
-             #str(obd.get_sensor_value(obd_sensors.SENSORS[0]))[i]
-            if test[i] == '1':
-                PIDSSupported[i] = True
+         
 
          if(ready is None):
             self.State = 0
