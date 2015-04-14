@@ -10,9 +10,10 @@ for i in range (20):
     st = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
     seq = ('[TIME, '+ st + ']')
     inner = ""
-
+    test = "10101010110010101010101010101011"
+    '''(obd.get_sensor_valueobd_sensors.SENSORS[0])[i]''' 
     for i in range (32):
-        if obd.PIDSSupported[i] == True:
+        if test[i] == '1':
             seq += "[" + obd_sensors.SENSORS[i].shortname + ": " + str(obd.get_sensor_value(obd_sensors.SENSORS[i])) + " " + obd_sensors.SENSORS[i].unit  + "]"
     print(seq)
     seq = ""
