@@ -10,7 +10,7 @@ for i in range (20):
     st = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
     seq = ('[TIME, '+ st + ']')
     inner = ""
-    test = "10101010110010101010101010101011"
+    test = "10001010000010101000001010101000"
     '''(obd.get_sensor_valueobd_sensors.SENSORS[0])[i]''' 
     for i in range (32):
         if test[i] == '1':
