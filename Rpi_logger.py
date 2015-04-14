@@ -2,7 +2,7 @@ import OBD_IO
 import obd_sensors
 import time
 import datetime
-obd = OBD_IO.OBDPort("/dev/pts/1", 1, 5)
+obd = OBD_IO.OBDPort("/dev/pts/4", 1, 5)
 inner = ""
 
 for i in range (20):
@@ -12,7 +12,8 @@ for i in range (20):
     inner = ""
 
     for i in range (32):
-       seq += "[" + obd_sensors.SENSORS[i].shortname + ": " + str(obd.get_sensor_value(obd_sensors.SENSORS[i])) + " " + obd_sensors.SENSORS[i].unit  + "]"
+        if obd.PIDSSupported[i] == True:
+            seq += "[" + obd_sensors.SENSORS[i].shortname + ": " + str(obd.get_sensor_value(obd_sensors.SENSORS[i])) + " " + obd_sensors.SENSORS[i].unit  + "]"
     print(seq)
     seq = ""
 print("Sucess!")
