@@ -2,7 +2,7 @@ import OBD_IO
 import obd_sensors
 import time
 import datetime
-obd = OBD_IO.OBDPort("/dev/pts/4", 1, 5)
+obd = OBD_IO.OBDPort("/dev/pts/1", 1, 5)
 inner = ""
 
 for i in range (20):
