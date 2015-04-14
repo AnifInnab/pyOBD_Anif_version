@@ -8,7 +8,7 @@ import gpsdData
 obd = OBD_IO.OBDPort("/dev/pts/1", 1, 5)
 inner = ""
 
-for i in range (50):
+while 1:
     ts = time.time()
     st = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
     seq = ('[TIME, '+ st + ']')
@@ -20,4 +20,3 @@ for i in range (50):
             seq += "[" + obd_sensors.SENSORS[i+1].cmd + ": " + str(obd.get_sensor_value(obd_sensors.SENSORS[i+1]))  + "]"
     print(seq)
     seq = ""
-print("Sucess!")
