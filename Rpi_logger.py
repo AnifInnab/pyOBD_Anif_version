@@ -3,12 +3,10 @@ import obd_sensors
 
 obd = OBD_IO.OBDPort("/dev/pts/2", 1, 5)
 
-
-obd.send_command("0100")
-
-result = obd.get_result()
-pids = obd_sensors.hex_to_bitstring(result)
-
-print(pids)
+for i in range (20):
+    obd.send_command("010d")
+    print(obd.get_result())
+    obd.send_command("010c")
+    print(obd.get_result())
 
 print("Sucess!")
