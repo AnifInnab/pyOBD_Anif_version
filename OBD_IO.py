@@ -63,7 +63,7 @@ class OBDPort:
             self.State = 0
             return None
             
-         print("0100 response:" + ready)
+    
          return None
               
      def close(self):

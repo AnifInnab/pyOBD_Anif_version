@@ -17,7 +17,7 @@ for i in range (50):
     '''(obd.get_sensor_valueobd_sensors.SENSORS[0])[i]''' 
     for i in range (32):
         if test[i] == '1':
-            seq += "[" + obd_sensors.SENSORS[i+1].shortname + ": " + str(obd.get_sensor_value(obd_sensors.SENSORS[i+1])) + " " + obd_sensors.SENSORS[i+1].unit  + "]"
+            seq += "[" + obd_sensors.SENSORS[i+1].cmd + ": " + str(obd.get_sensor_value(obd_sensors.SENSORS[i+1]))  + "]"
     print(seq)
     seq = ""
 print("Sucess!")
