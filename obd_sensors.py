@@ -8,7 +8,7 @@ def maf(code):
 
 def throttle_pos(code):
     code = hex_to_int(code)
-    return code * 100.0 / 255.0
+    return int(code * 100.0 / 255.0)
 
 def intake_m_pres(code): # in kPa
     code = hex_to_int(code)
