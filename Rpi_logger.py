@@ -3,7 +3,7 @@ import obd_sensors
 import time
 import os
 import datetime
-#import gpsdData
+import gpsdData
 gps = gpsdData.GpsPoller()
 print ("test:   : " + gps.getLong())
 #\\\\.\\CNCB0
