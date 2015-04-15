@@ -5,7 +5,7 @@ import os
 import datetime
 import gpsdData
 gps = gpsdData.GpsPoller()
-print ("test:   : " + gps.getLong())
+print ("test:   : " + str(gps.getLong()))
 #\\\\.\\CNCB0
 obd = OBD_IO.OBDPort('\\\\.\\CNCB0', 1, 5)
 def timestamp(format):
