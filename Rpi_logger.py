@@ -53,10 +53,10 @@ carSens = obd.get_sensor_value(obd_sensors.SENSORS[0])
 print (carSens)
 while 1:
         
-    seq = ('[TIME, '+ timestamp(2) + ']' + "[GPS: " + longitude + ", " + latitude + "]")
+    seq = ('[TIME, '+ timestamp(2) + ']' + "[GPS: " + str(gpsd.fix.longitude) + ", " + str(gpsd.fix.latitude) + "]")
     for i in range (2,12):
         if carSens[i] == '1':
-            seq += "[" + obd_sensors.SENSORS[i+1].shortname + ": " + str(obd.get_sensor_value(obd_sensors.SENSORS[i+1]))  + "]"
+            seq += "[" + obd_sensors.SENSORS[i+1].cmd + ": " + str(obd.get_sensor_value(obd_sensors.SENSORS[i+1]))  + "]"
     print(seq)
     seq += "\n"
     file.write(seq)
