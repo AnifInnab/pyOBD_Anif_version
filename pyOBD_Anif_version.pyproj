@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>82a52e6a-444b-4708-80c0-35274331d601</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>pyOBD_Anif_version.py</StartupFile>
+    <StartupFile>Rpi_logger.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -22,7 +22,10 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="pyOBD_Anif_version.py" />
+    <Compile Include="gpsdData.py" />
+    <Compile Include="OBD_IO.py" />
+    <Compile Include="obd_sensors.py" />
+    <Compile Include="Rpi_logger.py" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

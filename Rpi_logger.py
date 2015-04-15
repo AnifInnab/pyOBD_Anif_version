@@ -1,22 +1,43 @@
 import OBD_IO
 import obd_sensors
 import time
+import os
 import datetime
-import gpsdData
+#import gpsdData
 #gps = gpsdData.GpsPoller()
 #print ("test:   : " + gps.getLong())
-obd = OBD_IO.OBDPort("/dev/pts/1", 1, 5)
+obd = OBD_IO.OBDPort('\\\\.\\CNCB0', 1, 5)
 inner = ""
+def timestamp(format):
+     ts = time.time()
+     if format == 2:
+        st = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S:%f')[:-4]
+     elif format == 1:
+        st = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H.%M')
+     return st
 
+filename = timestamp(1)
+ts1 = filename
+file = open(filename, "a")
+file.write("[UID: JHJ0ekidS93_dk3145kIssW_Kj92rIesdDj]\n")
+carSens = obd.get_sensor_value(obd_sensors.SENSORS[0])
+print (carSens)
+go = 0
 while 1:
-    ts = time.time()
-    st = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
-    seq = ('[TIME, '+ st + ']')
+        
+    seq = ('[TIME, '+ timestamp(2) + ']')
     inner = ""
-    test = "00001010000010101000001010100000"
-    '''(obd.get_sensor_valueobd_sensors.SENSORS[0])[i]''' 
-    for i in range (32):
-        if test[i] == '1':
-            seq += "[" + obd_sensors.SENSORS[i+1].cmd + ": " + str(obd.get_sensor_value(obd_sensors.SENSORS[i+1]))  + "]"
+    for i in range (2,32):
+        if carSens[i] == '1':
+            seq += "[" + obd_sensors.SENSORS[i+1].shortname + ": " + str(obd.get_sensor_value(obd_sensors.SENSORS[i+1]))  + "]"
     print(seq)
+    seq += "\n"
+    file.write(seq)
+    file.flush()
     seq = ""
+    newFileName = ts1 + " - " + timestamp(1)
+    if(filename != newFileName):
+        file.close()
+        os.rename(filename, newFileName) 
+        file = open(newFileName, "a")
+        filename = newFileName

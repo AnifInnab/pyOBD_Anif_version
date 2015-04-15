@@ -46,12 +46,11 @@ class OBDPort:
          except serial.SerialException:
             self.State = 0
             return None
-            
+
          self.ELMver = self.get_result()
          if(self.ELMver is None):
             self.State = 0
             return None
-         
          print("atz response:" + self.ELMver)
          self.send_command("ate0")  # echo off
          print("ate0 response:" + self.get_result())
@@ -63,7 +62,7 @@ class OBDPort:
             self.State = 0
             return None
             
-    
+         print(ready)
          return None
               
      def close(self):
@@ -95,7 +94,7 @@ class OBDPort:
          # 9 seems to be the length of the shortest valid response
          if len(code) < 7:
              #raise Exception("BogusCode")
-             print ("boguscode?")+code
+             print ("Bad code")+code
          
          # get the first thing returned, echo should be off
          code = string.split(code, "\r")
@@ -124,7 +123,7 @@ class OBDPort:
                  if len(c) == 0:
                     if(repeat_count == 5):
                         break
-                    print ("Got nothing\n")
+                    print ("NO DATA RECIEVED!\n")
                     repeat_count = repeat_count + 1
                     continue
                     
@@ -142,7 +141,7 @@ class OBDPort:
                 return None
              return buffer
          else:
-            print("NO self.port!")
+            print("PORT PROBLEM")
          return None
 
      # get sensor value from command
