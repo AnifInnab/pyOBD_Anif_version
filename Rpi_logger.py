@@ -40,10 +40,10 @@ def timestamp(format):
 
 
 
-for i in range (50):
+for i in range (10):
     longitude = str(gpsd.fix.longitude)
     latitude = str(gpsd.fix.latitude)
-    print(longitude + ", " + latitude)
+    print("[GPS: " + longitude + ", " + latitude + "]")
     time.sleep(2)
 filename = timestamp(1)
 ts1 = filename
@@ -53,7 +53,7 @@ carSens = obd.get_sensor_value(obd_sensors.SENSORS[0])
 print (carSens)
 while 1:
         
-    seq = ('[TIME, '+ timestamp(2) + ']')
+    seq = ('[TIME, '+ timestamp(2) + ']' + "[GPS: " + longitude + ", " + latitude + "]")
     for i in range (2,32):
         if carSens[i] == '1':
             seq += "[" + obd_sensors.SENSORS[i+1].shortname + ": " + str(obd.get_sensor_value(obd_sensors.SENSORS[i+1]))  + "]"
