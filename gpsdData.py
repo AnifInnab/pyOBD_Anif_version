@@ -15,7 +15,8 @@ class GpsPoller(threading.Thread):
     gpsd = gps(mode=WATCH_ENABLE) #starting the stream of info
     self.current_value = None
     self.running = True #setting the thread running to true
- 
+    for i in range(30):
+        print(gpsd.fix.longitude + " - ")
   def run(self):
     global gpsd
     while gpsp.running:
