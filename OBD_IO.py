@@ -141,7 +141,7 @@ class OBDPort:
                 return None
              return buffer
          else:
-            print("PORT PROBLEM")
+            print("PORT NOT CONNECTED...")
          return None
 
      # get sensor value from command
