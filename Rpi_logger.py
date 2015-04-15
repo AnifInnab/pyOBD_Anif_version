@@ -6,8 +6,8 @@ import datetime
 #import gpsdData
 #gps = gpsdData.GpsPoller()
 #print ("test:   : " + gps.getLong())
-obd = OBD_IO.OBDPort('\\\\.\\CNCB0', 1, 5)
-inner = ""
+#\\\\.\\CNCB0
+obd = OBD_IO.OBDPort('/dev/pts/2', 1, 5)
 def timestamp(format):
      ts = time.time()
      if format == 2:
@@ -22,11 +22,9 @@ file = open(filename, "a")
 file.write("[UID: JHJ0ekidS93_dk3145kIssW_Kj92rIesdDj]\n")
 carSens = obd.get_sensor_value(obd_sensors.SENSORS[0])
 print (carSens)
-go = 0
 while 1:
         
     seq = ('[TIME, '+ timestamp(2) + ']')
-    inner = ""
     for i in range (2,32):
         if carSens[i] == '1':
             seq += "[" + obd_sensors.SENSORS[i+1].shortname + ": " + str(obd.get_sensor_value(obd_sensors.SENSORS[i+1]))  + "]"
