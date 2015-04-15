@@ -7,6 +7,7 @@ import gpsdData
 gps = gpsdData.GpsPoller()
 for i in range(50):
     print ("test:   : " + str(gps.getLong()) + " - " + str(gps.getLat())+ "  - " +str(gps.getName()) )
+    time.sleep(0.5)
     
     
 #\\\\.\\CNCB0
