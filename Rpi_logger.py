@@ -44,6 +44,7 @@ for i in range (50):
     longitude = str(gpsd.fix.longitude)
     latitude = str(gpsd.fix.latitude)
     print(longitude + ", " + latitude)
+    time.sleep(2)
 filename = timestamp(1)
 ts1 = filename
 file = open(filename, "a")
