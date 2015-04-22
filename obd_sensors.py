@@ -4,7 +4,7 @@ def hex_to_int(str):
 
 def maf(code):
     code = hex_to_int(code)
-    return int(code)/100 # * 0.00132276)
+    return int(code) * 0.00132276
 
 def throttle_pos(code):
     code = hex_to_int(code)
@@ -20,7 +20,7 @@ def rpm(code):
 
 def speed(code):
     code = hex_to_int(code)
-    return code #/ 1.609 in MPH
+    return code / 1.609 #in MPH
 
 def percent_scale(code):
     code = hex_to_int(code)
@@ -129,7 +129,7 @@ SENSORS = [
     Sensor("speed"                 , "Vehicle Speed"				, "010D", speed            ,"km/h"    ),#1
     Sensor("timing_advance"        , "Timing Advance"				, "010E" , timing_advance   ,"degrees"),
     Sensor("intake_air_temp"       , "Intake Air Temp"				, "010F" , temp             ,"F"      ),
-    Sensor("maf"                   , "AirFlow Rate(MAF)"			, "0110" , maf              ,"lb/min" ),
+    Sensor("maf"                   , "AirFlow Rate(MAF)"			, "0110" , maf              ,"grams/sec" ),
     Sensor("throttle_pos"          , "Throttle Position"			, "0111", throttle_pos     ,"%"      ),#1
     Sensor("secondary_air_status"  , "2nd Air Status"				, "0112" , cpass            ,""       ),
     Sensor("o2_sensor_positions"   , "Loc of O2 sensors"			, "0113" , cpass            ,""       ),
