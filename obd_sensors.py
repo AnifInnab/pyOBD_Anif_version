@@ -4,8 +4,7 @@ def hex_to_int(str):
 
 def maf(code):
     code = hex_to_int(code)
-    return int(code) * 0.00132276
-
+    return int(code)/100
 def throttle_pos(code):
     code = hex_to_int(code)
     return int(code * 100.0 / 255.0)
@@ -20,7 +19,7 @@ def rpm(code):
 
 def speed(code):
     code = hex_to_int(code)
-    return code / 1.609 #in MPH
+    return code #/ 1.609 #in MPH
 
 def percent_scale(code):
     code = hex_to_int(code)
