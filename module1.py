@@ -116,9 +116,10 @@ class logger:
         
         file.write("[UID: JHJ0ekidS93_dk3145kIssW_Kj92rIesdDj]\n")  #RASPBERRY SERIAL (UNIQE ID) CHANGE THIS LATER 
 
-        ####################### WRITE DTC #########################
+        '''####################### WRITE DTC #########################
         self.obd.send_command("0101")
         nrOfDTC = self.obd.nrOfDTC(self.obd.get_result())
+        print(nrOfDTC)
         if nrOfDTC != 0:
             self.obd.send_command("03")
             dtc = self.obd.interpret_DTCresult( self.obd.get_result() )
@@ -126,7 +127,7 @@ class logger:
             for i in range (int(nrOfDTC)):
                 self.writePidToFile("ERROR", dtcCodes[i])
             file.write(self.seq + "\n")
-        ###########################################################
+        ###########################################################'''
 
         carSens = self.pidsSupported()  #GET SUPPORTED PIDS
         temptime = -1
