@@ -119,13 +119,13 @@ class logger:
         ####################### WRITE DTC #########################
         self.obd.send_command("0101")
         nrOfDTC = self.obd.nrOfDTC(self.obd.get_result())
-
-        self.obd.send_command("03")
-        dtc = self.obd.interpret_DTCresult( self.obd.get_result() )
-        dtcCodes = (OBD_IO.decrypt_dtc_code(dtc, nrOfDTC))
-        for i in range (int(nrOfDTC)):
-            self.writePidToFile("ERROR", dtcCodes[i])
-        file.write(self.seq + "\n")
+        if nrOfDTC != 0:
+            self.obd.send_command("03")
+            dtc = self.obd.interpret_DTCresult( self.obd.get_result() )
+            dtcCodes = (OBD_IO.decrypt_dtc_code(dtc, nrOfDTC))
+            for i in range (int(nrOfDTC)):
+                self.writePidToFile("ERROR", dtcCodes[i])
+            file.write(self.seq + "\n")
         ###########################################################
 
         carSens = self.pidsSupported()  #GET SUPPORTED PIDS
