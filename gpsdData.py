@@ -24,7 +24,7 @@ class GpsPoller(threading.Thread):
   def getLong(self):
     return gpsd.fix.longitude
   def getLat(self):
-      return gpsd.fix.latitude
+    return gpsd.fix.latitude
     
 if __name__ == '__main__':
   gpsp = GpsPoller() # create the thread
