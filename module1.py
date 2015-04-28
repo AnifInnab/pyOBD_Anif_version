@@ -137,7 +137,7 @@ class logger:
 
             if self.timeGone>temptime:  #If seconds changes
                 self.seq = ('[TIME, '+ self.timestamp(2) + ']'   )
-                self.seq += ("[GPS: " + str(self.gps.fix.longitude) + ", " + str(self.gps.fix.latitude) + "]")  ## IF GPS TURNED ON
+                self.seq += ("[GPS: " + str(self.gps.getLat()) + ", " + str(self.gps.getLong()) + "]")  ## IF GPS TURNED ON
        
                 ## MOST IMPORTANT PIDS (RPM, SPEED, MAF) ##
                 sensorvalue = self.obd.get_sensor_value(obd_sensors.SENSORS[12])
