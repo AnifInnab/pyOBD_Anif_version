@@ -10,7 +10,7 @@ import gpsdData
 #\\\\.\\CNCB0
 class logger:
     def __init__(self):
-        self.obd = OBD_IO.OBDPort('/dev/ttyUSB0', 1, 5)
+        self.obd = OBD_IO.OBDPort('/dev/pts/2', 1, 5)
         self.gps = gpsdData.GpsPoller()
         self.totFuelConsumed = 0
         self.totSpeedChange = 0
