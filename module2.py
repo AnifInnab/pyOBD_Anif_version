@@ -1,5 +1,5 @@
 import module1
-import gpsdData.py
+import gpsdData
 
 test = gpsdData.GpsPoller()
 
