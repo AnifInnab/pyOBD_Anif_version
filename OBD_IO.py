@@ -11,6 +11,44 @@ GET_DTC_COMMAND   = "03"
 CLEAR_DTC_COMMAND = "04"
 GET_FREEZE_DTC_COMMAND = "07"
 
+def decrypt_dtc_code(code, nrOfDTC):
+    """Returns the 5-digit DTC code from hex encoding"""
+    dtc = []
+    current = code
+    print(current)
+    print(current[0])
+    type = ""
+    newRow = 0
+    for i in range(0,nrOfDTC):
+        if len(current)<4:
+            print( "Tried to decode bad DTC: " + str(code))
+
+        tc = obd_sensors.hex_to_int(current[0]) #typecode
+        tc = tc >> 2
+        if   tc == 0:
+            type = "P"
+        elif tc == 1:
+            type = "C"
+        elif tc == 2:
+            type = "B"
+        elif tc == 3:
+            type = "U"
+        else:
+            print("raise tc")
+
+        dig1 = str(obd_sensors.hex_to_int(current[0]) & 3)
+        dig2 = str(obd_sensors.hex_to_int(current[1]))
+        dig3 = str(obd_sensors.hex_to_int(current[2]))
+        dig4 = str(obd_sensors.hex_to_int(current[3]))
+        dtc.append(type+dig1+dig2+dig3+dig4)
+        newRow+=1
+        if newRow < 3:
+            current = current[4:]
+        else:
+            current = current[6:]
+            newRow=0
+    return dtc
+
 class OBDPort:
      """ OBDPort abstracts all communication with OBD-II device."""
      def __init__(self,portnum,SERTIMEOUT,RECONNATTEMPTS):
@@ -112,6 +150,62 @@ class OBDPort:
          code = code[4:]
          return code
     
+     def interpret_DTCresult(self,code):
+         """Internal use only: not a public interface"""
+         # Code will be the string returned from the device.
+         # It should look something like this:
+         # '41 11 0 0\r\r'
+         
+         # 9 seems to be the length of the shortest valid response
+         if len(code) < 7:
+             #raise Exception("BogusCode")
+             print ("Bad code")+code
+         
+         # get the first thing returned, echo should be off
+         code = string.split(code, "\r")
+         code = code[0]
+         
+         #remove whitespace
+         code = string.split(code)
+         code = string.join(code, "")
+         
+         #cables can behave differently 
+         if code[:6] == "NODATA": # there is no such sensor
+             return "NODATA"
+             
+         # first 4 characters are code from ELM
+         code = code[2:]
+         return code
+     def nrOfDTC(self,code):
+         """Internal use only: not a public interface"""
+         # Code will be the string returned from the device.
+         # It should look something like this:
+         # '41 11 0 0\r\r'
+         
+         # 9 seems to be the length of the shortest valid response
+         if len(code) < 7:
+             #raise Exception("BogusCode")
+             print ("Bad code")+code
+         
+         # get the first thing returned, echo should be off
+         code = string.split(code, "\r")
+         code = code[0]
+         
+         #remove whitespace
+         code = string.split(code)
+         code = string.join(code, "")
+         
+         #cables can behave differently 
+         if code[:6] == "NODATA": # there is no such sensor
+             return "NODATA"
+             
+         # first 4 characters are code from ELM
+         code = code[4:6]
+         nr = int(code, 16) - 128
+         #nr = obd_sensors.hex_to_int(nr) - 128
+         return nr
+
+
      def get_result(self):
          """Internal use only: not a public interface"""
          #time.sleep(0.01)

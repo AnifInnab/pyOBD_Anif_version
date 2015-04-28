@@ -1,5 +1,6 @@
 def hex_to_int(str):
-    i = eval("0x" + str, {}, {})
+    i = int(("0x" + str), 16)
+    #i = eval("0x" + str, {}, {})
     return i
 
 def maf(code):

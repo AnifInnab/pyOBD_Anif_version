@@ -140,43 +140,41 @@ while 1:
         '''+"[GPS: " + str(gpsd.fix.longitude) + ", " + str(gpsd.fix.latitude) + "]" '''
         seq = ('[TIME, '+ timestamp(2) + ']'   )
     
-       
-        sensorvalue = obd.get_sensor_value(obd_sensors.SENSORS[12])
-        seq += "[" + "010c" + ": " + str(sensorvalue)  + "]"
-        totVechRPM += sensorvalue
-        curRPM = sensorvalue
+        for i in range (1,32):
+            if carSens[i] == '1':
+                seq += "[" + obd_sensors.SENSORS[i+1].cmd + ": " + str(obd.get_sensor_value(obd_sensors.SENSORS[i+1]))  + "]"
 
-        sensorvalue = obd.get_sensor_value(obd_sensors.SENSORS[13])
-        seq += "[" + "010d" + ": " + str(sensorvalue)  + "]"
-        currentSpeed = sensorvalue
-        totVechSpeed += sensorvalue
-        if currentSpeed>20:
-            carSTOP = False
-            stopTrigger = 0
-        elif currentSpeed<5:
-            carSTOP = True
-            if stopTrigger != 1:
-                nrOfStops += 1
-            stopTrigger = 1
-        if count > 0:
-            if(currentSpeed>lastSpeed):
-                totSpeedChange += (currentSpeed - lastSpeed)
-                if((currentSpeed - lastSpeed)>20):
-                    print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx Hard acceleration! xxxxxxxxxxxxxxxxxxxxxx")
-            elif(currentSpeed<lastSpeed):
-                totSpeedChange += (lastSpeed - currentSpeed)
-                if((lastSpeed-currentSpeed)>20):
-                    print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx Hard Brake! xxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
-            elif(currentSpeed==lastSpeed):
-                totSpeedChange += 0
-            lastSpeed = currentSpeed
-            count = 0
-
-        sensorvalue = obd.get_sensor_value(obd_sensors.SENSORS[16])
-        seq += "[" + "0110 "+ ": " + str(sensorvalue)  + "]"
-        curMAF = sensorvalue
-        temptime = timeGone
-        count += 1
+                if obd_sensors.SENSORS[i+1].cmd == "010D":  #speed per sec
+                    currentSpeed = obd.get_sensor_value(obd_sensors.SENSORS[i+1])
+                    totVechSpeed += currentSpeed
+                    if currentSpeed>20:
+                        carSTOP = False
+                        stopTrigger = 0
+                    elif currentSpeed<5:
+                        carSTOP = True
+                        if stopTrigger != 1:
+                            nrOfStops += 1
+                        stopTrigger = 1
+                    if count > 0:
+                        if(currentSpeed>lastSpeed):
+                            totSpeedChange += (currentSpeed - lastSpeed)
+                            if((currentSpeed - lastSpeed)>20):
+                                print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx Hard acceleration! xxxxxxxxxxxxxxxxxxxxxx")
+                        elif(currentSpeed<lastSpeed):
+                            totSpeedChange += (lastSpeed - currentSpeed)
+                            if((lastSpeed-currentSpeed)>20):
+                                print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx Hard Brake! xxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+                        elif(currentSpeed==lastSpeed):
+                            totSpeedChange += 0
+                        lastSpeed = currentSpeed
+                        count = 0
+                elif obd_sensors.SENSORS[i+1].cmd == "010C":  #rpm
+                    totVechRPM += obd.get_sensor_value(obd_sensors.SENSORS[i+1])
+                    curRPM = obd.get_sensor_value(obd_sensors.SENSORS[i+1])
+                elif obd_sensors.SENSORS[i+1].cmd == "0110":  #MAF
+                    curMAF = obd.get_sensor_value(obd_sensors.SENSORS[i+1])  
+                temptime = timeGone
+                count += 1
         #print(seq)
         print("________________________________________\n")
         print("time gone: " + str(timeGone) + "s")
