@@ -160,7 +160,7 @@ class logger:
             self.timeGone = int(((time.time())-startTime)) #Current time - starting time
 
             if self.timeGone>temptime:  #If seconds changes
-                self.seq = ('[TIME, '+ self.timestamp(2) + ']' +"[GPS: " + str(gpsd.fix.longitude) + ", " + str(gpsd.fix.latitude) + "]" )
+                self.seq = ('[TIME, '+ self.timestamp(2) + ']' +"[GPS: " + str(GpsPoller.gpsd.fix.longitude) + ", " + str(GpsPoller.gpsd.fix.latitude) + "]" )
                 #self.seq += ("[GPS: " + str(self.gps.getLat()) + ", " + str(self.gps.getLong()) + "]")  ## IF GPS TURNED ON
        
                 ## MOST IMPORTANT PIDS (RPM, SPEED, MAF) ##
