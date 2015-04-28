@@ -28,9 +28,7 @@ class GpsPoller(threading.Thread):
     while gpsp.running:
       gpsd.next() #this will continue to loop and grab EACH set of gpsd info to clear the buffer
  
-if __name__ == '__main__':
-  gpsp = GpsPoller() # create the thread
-  gpsp.start() # start it up
+
 
 
 class logger:
@@ -49,7 +47,8 @@ class logger:
         self.fuelConsumed = 0
         self.carSTOP = True
         self.seq = ""
-       
+        self.gpsp = GpsPoller() # create the thread
+        self.gpsp.start() # start it up
         self.startLogging()
 
     def timestamp(self, format):
@@ -160,7 +159,7 @@ class logger:
             self.timeGone = int(((time.time())-startTime)) #Current time - starting time
 
             if self.timeGone>temptime:  #If seconds changes
-                self.seq = ('[TIME, '+ self.timestamp(2) + ']' +"[GPS: " + str(GpsPoller.gpsd.fix.longitude) + ", " + str(GpsPoller.gpsd.fix.latitude) + "]" )
+                self.seq = ('[TIME, '+ self.timestamp(2) + ']' +"[GPS: " + str(self.gpsp.gpsd.fix.longitude) + ", " + str(self.gpsp.gpsd.fix.latitude) + "]" )
                 #self.seq += ("[GPS: " + str(self.gps.getLat()) + ", " + str(self.gps.getLong()) + "]")  ## IF GPS TURNED ON
        
                 ## MOST IMPORTANT PIDS (RPM, SPEED, MAF) ##
