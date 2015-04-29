@@ -153,10 +153,15 @@ class logger:
         
         report = self.session.next()
         print (report)
+
+
+        if report['class'] == 'TPV':
+            print("SHO1")
+            if hasattr(report, 'time'):
+                print("SHO2")
+                lon = ("longitude: " + str(report.lon))
         time.sleep(9)
         startTime = time.time()
-        print(GpsPoller.gpsd.fix.latitude())
-        print ('longitude   ' + str(gpsd.fix.longitude))
         while 1:
     
             self.timeGone = int(((time.time())-startTime)) #Current time - starting time
