@@ -5,32 +5,15 @@ import time
 import os
 import datetime
 import threading
-#import gpsdData
+import gpsdData
     
 #\\\\.\\CNCB0
-'''
-from gps import *
-
-class GpsPoller(threading.Thread):
-  def __init__(self):
-    threading.Thread.__init__(self)
-    global gpsd #bring it in scope
-    gpsd = gps(mode=WATCH_ENABLE) #starting the stream of info
-
-    self.current_value = None
-    self.running = True #setting the thread running to true
- 
-  def run(self):
-    global gpsd
-    while gpsp.running:
-      gpsd.next() #this will continue to loop and grab EACH set of gpsd info to clear the buffer
- '''
 
 
 
 class logger:
     def __init__(self):
-        self.obd = OBD_IO.OBDPort('\\\\.\\CNCB0', 1, 5)
+        self.obd = OBD_IO.OBDPort('/dev/ttyUSB0', 1, 5)
         self.totFuelConsumed = 0
         self.totSpeedChange = 0
         self.totVechSpeed = 0
@@ -171,8 +154,9 @@ class logger:
 
             if self.timeGone>temptime:  #If seconds changes
                 self.seq = ('[TIME, '+ self.timestamp(2) + ']') # +"[GPS: " + str(self.gpsp.gpsd.fix.longitude) + ", " + str(self.gpsp.gpsd.fix.latitude) + "]" )
-                #self.seq += ("[GPS: " + str(self.gps.getLat()) + ", " + str(self.gps.getLong()) + "]")  ## IF GPS TURNED ON
-       
+                #self.seq += ("[GPS: " + str(gpsdData.gps.getLat()) + ", " + str(gpsdData.gps.getLong()) + "]")  ## IF GPS TURNED ON
+                for i in range(512):
+                    print(gpsdData.gpsd.fix.latitude)
                 ## MOST IMPORTANT PIDS (RPM, SPEED, MAF) ##
                 sensorvalue = self.obd.get_sensor_value(obd_sensors.SENSORS[12])
                 self.writePidToFile("010c", str(sensorvalue))
