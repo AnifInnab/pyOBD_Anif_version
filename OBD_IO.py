@@ -15,8 +15,6 @@ def decrypt_dtc_code(code, nrOfDTC):
     """Returns the 5-digit DTC code from hex encoding"""
     dtc = []
     current = code
-    print(current)
-    print(current[0])
     type = ""
     newRow = 0
     for i in range(0,nrOfDTC):

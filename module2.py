@@ -1,6 +1,6 @@
 import module1
-import gpsdData
+#import gpsdData
 
-test = gpsdData.GpsPoller()
-print(test.getLong())
-#logger = module1.logger()
+#test = gpsdData.GpsPoller()
+#print(test.getLong())
+logger = module1.logger()

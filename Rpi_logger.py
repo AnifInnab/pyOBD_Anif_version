@@ -109,9 +109,6 @@ def fuelConsumption(fuelConsumed, fuelCost):
      print("Fuelcost: " + str(fuelCost))
      return round(instMeter*lpm, 2)
 
-
-     
-
 #longitude = str(gpsd.fix.longitude)
 #latitude = str(gpsd.fix.latitude)
 #print("[GPS TEST: " + longitude + ", " + latitude + "]")

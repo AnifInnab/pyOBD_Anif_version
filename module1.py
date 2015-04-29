@@ -8,11 +8,8 @@ import threading
 #import gpsdData
     
 #\\\\.\\CNCB0
-
+'''
 from gps import *
-
-
-
 
 class GpsPoller(threading.Thread):
   def __init__(self):
@@ -27,13 +24,13 @@ class GpsPoller(threading.Thread):
     global gpsd
     while gpsp.running:
       gpsd.next() #this will continue to loop and grab EACH set of gpsd info to clear the buffer
- 
+ '''
 
 
 
 class logger:
     def __init__(self):
-        self.obd = OBD_IO.OBDPort('/dev/pts/2', 1, 5)
+        self.obd = OBD_IO.OBDPort('\\\\.\\CNCB0', 1, 5)
         self.totFuelConsumed = 0
         self.totSpeedChange = 0
         self.totVechSpeed = 0
@@ -47,8 +44,8 @@ class logger:
         self.fuelConsumed = 0
         self.carSTOP = True
         self.seq = ""
-        self.gpsp = GpsPoller() # create the thread
-        self.gpsp.start() # start it up
+  #      self.gpsp = GpsPoller() # create the thread
+  #     self.gpsp.start() # start it up
         self.startLogging()
 
     def timestamp(self, format):
@@ -59,9 +56,14 @@ class logger:
             st = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H.%M.%S')
          return st
     def calcEco(self):
-         meanSpeed = (self.totVechSpeed/self.nrOfResponses)
-         meanRPM = self.totVechRPM/self.nrOfResponses
-         meanSpeedChange = self.totSpeedChange/self.nrOfResponses
+         if(self.timeGone <1):
+            meanSpeed = self.obd.get_sensor_value(obd_sensors.SENSORS[13])
+            meanRPM = self.obd.get_sensor_value(obd_sensors.SENSORS[12])
+            meanSpeedChange = self.totSpeedChange/self.nrOfResponses
+         else:
+             meanSpeed = (self.totVechSpeed/self.nrOfResponses)
+             meanRPM = self.totVechRPM/self.nrOfResponses
+             meanSpeedChange = self.totSpeedChange/self.nrOfResponses
 
          hours = (self.timeGone/3600)
          fe = (meanSpeed*100)/(0.0001 + meanRPM/100)
@@ -80,15 +82,21 @@ class logger:
                 print(obd_sensors.SENSORS[i+1].name + ":    NOT SUPPORTED")
         return carSens
     def showData(self, currentSpeed, curRPM, curMAF):
-         meanSpeed = (self.totVechSpeed/self.nrOfResponses)
-         meanRPM = self.totVechRPM/self.nrOfResponses
-         meanSpeedChange = self.totSpeedChange/self.nrOfResponses
-
+         if(self.timeGone <2):
+            meanSpeed = self.obd.get_sensor_value(obd_sensors.SENSORS[13])
+            meanRPM = self.obd.get_sensor_value(obd_sensors.SENSORS[12])
+            meanSpeedChange = self.totSpeedChange/self.nrOfResponses
+         else:
+             meanSpeed = (self.totVechSpeed/self.nrOfResponses)
+             meanRPM = self.totVechRPM/self.nrOfResponses
+             meanSpeedChange = self.totSpeedChange/self.nrOfResponses
          print("Current speed: " + str(currentSpeed) + " km/h")
          print("Current RPM: " + str(curRPM) + " rpm")
          print("Current MAF: " + str(curMAF)+" grams/sec \n")
          print("Mean Speed: " + str(int(round(meanSpeed))) + " km/h")
-         print("Mean RPM: " + str(int(round(meanRPM))) + " rpm")
+         print("Mean RPM: " + str(int(round(meanRPM))) + " rpm\n")
+
+
          print("nrOfStops: " + str(self.nrOfStops))
 
          print("Mean change in speed: " + str(int(round(meanSpeedChange))) + "km/h per seconds")
@@ -96,7 +104,7 @@ class logger:
          if(self.meters<1000):
             print("Distance traveled: " + str(round(self.meters)) + "m")
          elif(self.meters<10000):
-            print("Distance traveled: " + str(round(self.meters/1000, 1)) + "km")
+            print("Distance traveled: " + str(round(self.meters/1000, 2)) + "km")
          else:
             print("Distance traveled: " + str(round(self.meters/10000, 2)) + " mil")
     def fuelConsumption(self, curMAF, currentSpeed):
@@ -114,14 +122,14 @@ class logger:
          lpm = lp100km / 100000
      
      
-         print("MPG: " + str(mpg))
-         print("liters per 100km: " + str(lp100km))
+         print("MPG: " + str(round(mpg, 2)))
+         print("liters per 100km: " + str(round(lp100km, 2)))
      
          mps = currentSpeed/3.6
 
          fuelConsumed = mps * lpm
-         print(fuelConsumed)
-         print("Fuel Consumed: " + str(fuelConsumed))
+         #print(fuelConsumed)
+         #print("Fuel Consumed: " + str(fuelConsumed))
          self.totFuelConsumed += fuelConsumed
          self.fuelCost += fuelConsumed*13
 
@@ -131,35 +139,38 @@ class logger:
         self.seq += "[" + command + ", " + result + "]"
     def startLogging(self):
         filename = self.timestamp(1) #Get filename in timestampformat(1)
-        startTime = time.time()
-        #curMAF = self.obd.get_sensor_value(obd_sensors.SENSORS[16])
 
         ts1 = filename
         file = open(filename, "a")
         
-        file.write("[UID: JHJ0ekidS93_dk3145kIssW_Kj92rIesdDj]\n")  #RASPBERRY SERIAL (UNIQE ID) CHANGE THIS LATER 
+        file.write("[UID, JHJ0ekidS93_dk3145kIssW_Kj92rIesdDj]-\n")  #RASPBERRY SERIAL (UNIQE ID) CHANGE THIS LATER 
 
-        '''####################### WRITE DTC #########################
+        ####################### WRITE DTC #########################
         self.obd.send_command("0101")
         nrOfDTC = self.obd.nrOfDTC(self.obd.get_result())
-        print(nrOfDTC)
+        #print(nrOfDTC)
         if nrOfDTC != 0:
             self.obd.send_command("03")
             dtc = self.obd.interpret_DTCresult( self.obd.get_result() )
             dtcCodes = (OBD_IO.decrypt_dtc_code(dtc, nrOfDTC))
             for i in range (int(nrOfDTC)):
+                print("Engine DTC errorcode: " + dtcCodes[i] )
                 self.writePidToFile("ERROR", dtcCodes[i])
-            file.write(self.seq + "\n")
-        ###########################################################'''
+            file.write(self.seq + "-\n")
+            time.sleep(10)
+        ###########################################################
 
         carSens = self.pidsSupported()  #GET SUPPORTED PIDS
         temptime = -1
+
+
+        startTime = time.time()
         while 1:
     
             self.timeGone = int(((time.time())-startTime)) #Current time - starting time
 
             if self.timeGone>temptime:  #If seconds changes
-                self.seq = ('[TIME, '+ self.timestamp(2) + ']' +"[GPS: " + str(self.gpsp.gpsd.fix.longitude) + ", " + str(self.gpsp.gpsd.fix.latitude) + "]" )
+                self.seq = ('[TIME, '+ self.timestamp(2) + ']') # +"[GPS: " + str(self.gpsp.gpsd.fix.longitude) + ", " + str(self.gpsp.gpsd.fix.latitude) + "]" )
                 #self.seq += ("[GPS: " + str(self.gps.getLat()) + ", " + str(self.gps.getLong()) + "]")  ## IF GPS TURNED ON
        
                 ## MOST IMPORTANT PIDS (RPM, SPEED, MAF) ##
@@ -172,7 +183,14 @@ class logger:
                 self.writePidToFile("010d", str(sensorvalue))
                 curSpeed = sensorvalue
                 self.totVechSpeed += sensorvalue
-        
+                if curSpeed>20:
+                    self.carSTOP = False
+                    self.stopTrigger = 0
+                elif curSpeed<5:
+                    self.carSTOP = True
+                    if self.stopTrigger != 1:
+                        self.nrOfStops += 1
+                    self.stopTrigger = 1
                 ## MAF NOT ALL VECHICLE SUPPORT    -  GET SUPPORT FOR NON-MAF VECHICLES  -  IMAP = RPM * MAP / IAT  -  MAF = (IMAP/120)*(VE/100)*(ED)*(MM)/(R)
                 sensorvalue = self.obd.get_sensor_value(obd_sensors.SENSORS[16])
                 self.writePidToFile("0110", str(sensorvalue))
@@ -180,19 +198,20 @@ class logger:
                 ## 
                 print("________________________________________\n")
                 print("time gone: " + str(self.timeGone) + "s")
-                print("nrOfResponses: " + str(self.nrOfResponses))
-                print("Responses per second: " + str(round(self.nrOfResponses/(self.timeGone+0.0001),2)))
+                print("nrOfResponses: " + str(round(self.nrOfResponses)))
+                print("Responses per second: " + str(round(self.nrOfResponses/(self.timeGone+0.0001),2)) + "\n-   -   -   -   -   -   -   -   -   -   -\n                 ENGINE DATA\n")
         
-                self.showData(curSpeed, curRPM, curMAF)
+                self.showData(curSpeed, curRPM, curMAF) 
+                print("-   -   -   -   -   -   -   -   -   -   -\n               FUEL CONSUMPTION\n")
                 self.fuelConsumption(curMAF, curSpeed)
                 print ("Eco-points: " + str(round(self.calcEco())))
         
-                self.seq += "\n"
+                self.seq += "-\n"
                 file.write(self.seq)
                 file.flush()
                 self.seq = ""
 
-                newFileName = ts1 + " - " + self.timestamp(1)
+                newFileName = "logs/" + ts1 + " - " + self.timestamp(1) + ".txt"
                 if(filename != newFileName):
                     file.close()
                     os.rename(filename, newFileName) 
@@ -207,7 +226,7 @@ class logger:
 
 
 
-
+'''
 class GpsPoller(threading.Thread):
   def __init__(self):
     threading.Thread.__init__(self)
@@ -225,3 +244,4 @@ class GpsPoller(threading.Thread):
 if __name__ == '__main__':
   gpsp = GpsPoller() # create the thread
   gpsp.start() # start it up
+'''
