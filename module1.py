@@ -150,8 +150,8 @@ class logger:
 
         carSens = self.pidsSupported()  #GET SUPPORTED PIDS
         temptime = -1
-
-         ############################################# GPS ##################################################
+        '''
+         ################################ GPS ##################################################
  
         class GpsPoller(threading.Thread):
           def __init__(self):
@@ -178,7 +178,7 @@ class logger:
           gpsp.running = False #arret
           gpsp.join() # wait for the thread to finish what it's doing
           #################################################################################################
-
+          '''
         startTime = time.time()
         while 1:
     
