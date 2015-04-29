@@ -153,12 +153,9 @@ class logger:
         for i in range (5):
             report = self.session.next()
             print (report)
-
-
             if report['class'] == 'TPV':
                 if hasattr(report, 'time'):
                     lon = ("longitude: " + str(report.lon))
-        
             print(" " + str(self.session.fix.longitude))
         
 
@@ -168,8 +165,9 @@ class logger:
             self.timeGone = int(((time.time())-startTime)) #Current time - starting time
 
             if self.timeGone>temptime:  #If seconds changes
-                self.seq = ('[TIME, '+ self.timestamp(2) + '][GPS, ' + str(self.session.fix.longitude) + "-" + str(self.session.fix.latitude) + "]") 
-
+                self.seq = ('[TIME,'+ self.timestamp(2) + '][GPS,' + str(self.session.fix.longitude) + "-" + str(self.session.fix.latitude) + "]") 
+                self.writePidToFile("TIME", self.timestamp(2))
+                self.writePidToFile("GPS", (str(self.session.fix.longitude) + "-" + str(self.session.fix.latitude)))
                 ## MOST IMPORTANT PIDS (RPM, SPEED, MAF) ##
                 sensorvalue = self.obd.get_sensor_value(obd_sensors.SENSORS[12])
                 self.writePidToFile("010c", str(sensorvalue))
