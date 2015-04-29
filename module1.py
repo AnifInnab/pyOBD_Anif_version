@@ -5,8 +5,7 @@ import time
 import os
 import datetime
 import threading
-from gps import *
-gpsd = None #seting the global variable
+import gps
 
 #import gpsdData
     
@@ -16,8 +15,10 @@ gpsd = None #seting the global variable
 
 class logger:
     def __init__(self):
-        self.obd = OBD_IO.OBDPort('\\\\.\\CNCB0', 1, 5)
-        #self.gps = gpsdData.GpsPoller()
+        self.obd = OBD_IO.OBDPort('/dev/pts/1', 1, 5)
+         # Listen on port 2947 (gpsd) of localhost
+        self.session = gps.gps("localhost", "2947")
+        self.session.stream(gps.WATCH_ENABLE | gps.WATCH_NEWSTYLE)
         self.totFuelConsumed = 0
         self.totSpeedChange = 0
         self.totVechSpeed = 0
@@ -150,34 +151,9 @@ class logger:
         carSens = self.pidsSupported()  #GET SUPPORTED PIDS
         temptime = -1
         
-         ################################ GPS ##################################################
- 
-        class GpsPoller(threading.Thread):
-          def __init__(self):
-            threading.Thread.__init__(self)
-            global gpsd #bring it in scope
-            gpsd = gps(mode=WATCH_ENABLE) #starting the stream of info
-            self.current_value = None
-            self.running = True #setting the thread running to true
- 
-          def run(self):
-            global gpsd
-            while gpsp.running:
-              gpsd.next() #this will continue to loop and grab EACH set of gpsd info to clear the buffer
- 
-
-          gpsp = GpsPoller() # create the thread
-  
-          gpsp.start() # start it up
- 
-          time.sleep(5)  
-          print ('latitude    ' + str(gpsd.fix.latitude))
-          print ('longitude   ' + str(gpsd.fix.longitude))
-   
-          gpsp.running = False #arret
-          gpsp.join() # wait for the thread to finish what it's doing
-          #################################################################################################
-          
+        report = self.session.next()
+        print (report)
+        time.sleep(9)
         startTime = time.time()
         print(GpsPoller.gpsd.fix.latitude())
         print ('longitude   ' + str(gpsd.fix.longitude))
