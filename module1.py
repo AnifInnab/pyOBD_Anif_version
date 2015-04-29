@@ -158,10 +158,10 @@ class logger:
             if report['class'] == 'TPV':
                 print("SHO1")
                 if hasattr(report, 'time'):
-                    print("SHO2")
+                    print("SHO2a")
                     lon = ("longitude: " + str(report.lon))
         
-            print("------------------------------------------------LONGITUDE:                    "  + str(long))
+            print("------------------------------------------------LONGITUDE:                    "  + str(long) + ":    HE: " + str(fix.longitude))
         
         time.sleep(5)
         report = self.session.next()
