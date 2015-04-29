@@ -149,17 +149,19 @@ class logger:
         ###########################################################'''
         carSens = self.pidsSupported()  #GET SUPPORTED PIDS
         temptime = -1
-        while True:
-            report = self.session.next()
-            print (report)
+
+        time.sleep(20)
+        report = self.session.next()
+        print (report)
 
 
-            if report['class'] == 'TPV':
-                print("SHO1")
-                if hasattr(report, 'time'):
-                    print("SHO2")
-                    lon = ("longitude: " + str(report.lon))
+        if report['class'] == 'TPV':
+            print("SHO1")
+            if hasattr(report, 'time'):
+                print("SHO2")
+                lon = ("longitude: " + str(report.lon))
         
+        print("------------------------------------------------LONGITUDE:                    "  + long)
                 
         time.sleep(9)
         startTime = time.time()
