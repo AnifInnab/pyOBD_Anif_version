@@ -161,8 +161,20 @@ class logger:
                 print("SHO2")
                 lon = ("longitude: " + str(report.lon))
         
-        print("------------------------------------------------LONGITUDE:                    "  + long)
-                
+        print("------------------------------------------------LONGITUDE:                    "  + str(long))
+        
+        time.sleep(20)
+        report = self.session.next()
+        print (report)
+
+
+        if report['class'] == 'TPV':
+            print("SHO1")
+            if hasattr(report, 'time'):
+                print("SHO2")
+                lon = ("longitude: " + str(report.lon))
+        
+        print("------------------------------------------------LONGITUDE:                    "  + str(long))
         time.sleep(9)
         startTime = time.time()
         while 1:
