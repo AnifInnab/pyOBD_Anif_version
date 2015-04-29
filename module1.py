@@ -6,7 +6,6 @@ import os
 import datetime
 import threading
 from gps import *
-from time import *
 gpsd = None #seting the global variable
 
 #import gpsdData
