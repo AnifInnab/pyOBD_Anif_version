@@ -165,7 +165,7 @@ class logger:
             while gpsp.running:
               gpsd.next() #this will continue to loop and grab EACH set of gpsd info to clear the buffer
  
-        if __name__ == '__main__':
+
           gpsp = GpsPoller() # create the thread
   
           gpsp.start() # start it up
@@ -179,6 +179,8 @@ class logger:
           #################################################################################################
           
         startTime = time.time()
+        print(GpsPoller.gpsd.fix.latitude())
+        print ('longitude   ' + str(gpsd.fix.longitude))
         while 1:
     
             self.timeGone = int(((time.time())-startTime)) #Current time - starting time
