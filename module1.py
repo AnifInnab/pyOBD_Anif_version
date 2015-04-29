@@ -156,7 +156,7 @@ class logger:
                 self.seq = ('[TIME, '+ self.timestamp(2) + ']') # +"[GPS: " + str(self.gpsp.gpsd.fix.longitude) + ", " + str(self.gpsp.gpsd.fix.latitude) + "]" )
                 #self.seq += ("[GPS: " + str(gpsdData.gps.getLat()) + ", " + str(gpsdData.gps.getLong()) + "]")  ## IF GPS TURNED ON
                 for i in range(512):
-                    print(gpsdData.gpsd.fix.latitude)
+                    print(gpsdData.gpsp.getLat())
                 ## MOST IMPORTANT PIDS (RPM, SPEED, MAF) ##
                 sensorvalue = self.obd.get_sensor_value(obd_sensors.SENSORS[12])
                 self.writePidToFile("010c", str(sensorvalue))
