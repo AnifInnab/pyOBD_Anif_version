@@ -5,7 +5,11 @@ import time
 import os
 import datetime
 import threading
-import gpsdData
+from gps import *
+from time import *
+gpsd = None #seting the global variable
+
+#import gpsdData
     
 #\\\\.\\CNCB0
 
@@ -13,8 +17,8 @@ import gpsdData
 
 class logger:
     def __init__(self):
-        self.obd = OBD_IO.OBDPort('/dev/ttyUSB0', 1, 5)
-        self.gps = gpsdData.GpsPoller()
+        self.obd = OBD_IO.OBDPort('\\\\.\\CNCB0', 1, 5)
+        #self.gps = gpsdData.GpsPoller()
         self.totFuelConsumed = 0
         self.totSpeedChange = 0
         self.totVechSpeed = 0
@@ -147,6 +151,33 @@ class logger:
         carSens = self.pidsSupported()  #GET SUPPORTED PIDS
         temptime = -1
 
+         ############################################# GPS ##################################################
+ 
+        class GpsPoller(threading.Thread):
+          def __init__(self):
+            threading.Thread.__init__(self)
+            global gpsd #bring it in scope
+            gpsd = gps(mode=WATCH_ENABLE) #starting the stream of info
+            self.current_value = None
+            self.running = True #setting the thread running to true
+ 
+          def run(self):
+            global gpsd
+            while gpsp.running:
+              gpsd.next() #this will continue to loop and grab EACH set of gpsd info to clear the buffer
+ 
+        if __name__ == '__main__':
+          gpsp = GpsPoller() # create the thread
+  
+          gpsp.start() # start it up
+ 
+          time.sleep(5)  
+          print ('latitude    ' + str(gpsd.fix.latitude))
+          print ('longitude   ' + str(gpsd.fix.longitude))
+   
+          gpsp.running = False #arret
+          gpsp.join() # wait for the thread to finish what it's doing
+          #################################################################################################
 
         startTime = time.time()
         while 1:
@@ -156,8 +187,8 @@ class logger:
             if self.timeGone>temptime:  #If seconds changes
                 self.seq = ('[TIME, '+ self.timestamp(2) + ']') # +"[GPS: " + str(self.gpsp.gpsd.fix.longitude) + ", " + str(self.gpsp.gpsd.fix.latitude) + "]" )
                 #self.seq += ("[GPS: " + str(gpsdData.gps.getLat()) + ", " + str(gpsdData.gps.getLong()) + "]")  ## IF GPS TURNED ON
-                for i in range(512):
-                    print(self.gps.getLat())
+                #for i in range(10):
+               #     print(self.gps.getLat())
                 ## MOST IMPORTANT PIDS (RPM, SPEED, MAF) ##
                 sensorvalue = self.obd.get_sensor_value(obd_sensors.SENSORS[12])
                 self.writePidToFile("010c", str(sensorvalue))
@@ -184,10 +215,10 @@ class logger:
                 print("________________________________________\n")
                 print("time gone: " + str(self.timeGone) + "s")
                 print("nrOfResponses: " + str(round(self.nrOfResponses)))
-                print("Responses per second: " + str(round(self.nrOfResponses/(self.timeGone+0.0001),2)) + "\n-   -   -   -   -   -   -   -   -   -   -\n                 ENGINE DATA\n")
+                print("Responses per second: " + str(round(self.nrOfResponses/(self.timeGone+0.0001),2)) + "\n-   -   -   -   -   -   -   -   -   -   -\n                 ENGINE DATA\n-   -   -   -   -   -   -   -   -   -   -")
         
                 self.showData(curSpeed, curRPM, curMAF) 
-                print("-   -   -   -   -   -   -   -   -   -   -\n               FUEL CONSUMPTION\n")
+                print("-   -   -   -   -   -   -   -   -   -   -\n               FUEL CONSUMPTION\n-   -   -   -   -   -   -   -   -   -   -")
                 self.fuelConsumption(curMAF, curSpeed)
                 print ("Eco-points: " + str(round(self.calcEco())))
         
