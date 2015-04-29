@@ -150,42 +150,26 @@ class logger:
         carSens = self.pidsSupported()  #GET SUPPORTED PIDS
         temptime = -1
         
-        for i in range (20):
+        for i in range (5):
             report = self.session.next()
             print (report)
 
 
             if report['class'] == 'TPV':
-                print("SHO1")
                 if hasattr(report, 'time'):
-                    print("SHO2a")
                     lon = ("longitude: " + str(report.lon))
         
-            print("------------------------------------------------LONGITUDE:                    "  + str(long) + ":    HE: " + str(self.session.fix.longitude))
+            print(" " + str(self.session.fix.longitude))
         
-        time.sleep(5)
-        report = self.session.next()
-        print (report)
 
-
-        if report['class'] == 'TPV':
-            print("SHO1")
-            if hasattr(report, 'time'):
-                print("SHO2")
-                lon = ("longitude: " + str(report.lon))
-        
-        print("------------------------------------------------LONGITUDE:                    "  + str(long))
-        time.sleep(9)
         startTime = time.time()
         while 1:
     
             self.timeGone = int(((time.time())-startTime)) #Current time - starting time
 
             if self.timeGone>temptime:  #If seconds changes
-                self.seq = ('[TIME, '+ self.timestamp(2) + ']') # +"[GPS: " + str(self.gpsp.gpsd.fix.longitude) + ", " + str(self.gpsp.gpsd.fix.latitude) + "]" )
-                #self.seq += ("[GPS: " + str(gpsdData.gps.getLat()) + ", " + str(gpsdData.gps.getLong()) + "]")  ## IF GPS TURNED ON
-                #for i in range(10):
-               #     print(self.gps.getLat())
+                self.seq = ('[TIME, '+ self.timestamp(2) + '][GPS, ' + str(self.session.fix.longitude) + "-" + str(self.session.fix.latitude) + "]") 
+
                 ## MOST IMPORTANT PIDS (RPM, SPEED, MAF) ##
                 sensorvalue = self.obd.get_sensor_value(obd_sensors.SENSORS[12])
                 self.writePidToFile("010c", str(sensorvalue))
