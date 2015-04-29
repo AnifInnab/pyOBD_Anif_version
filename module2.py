@@ -33,7 +33,7 @@ if __name__ == '__main__':
     gpsp.start() # start it up
     while True:
       #It may take a second or two to get good data
-      print ("sho: "+ str(gpsd.fix.latitude) +  ", " + str(gpsd.fix.longitude)  +  ", " + str(Time) + ",gpsd.utc ")
+      print ("sho: "+ str(gpsd.fix.latitude) +  ", " + str(gpsd.fix.longitude) ")
   
 
       gpsd.fix.latitude
