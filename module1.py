@@ -161,7 +161,7 @@ class logger:
                     print("SHO2a")
                     lon = ("longitude: " + str(report.lon))
         
-            print("------------------------------------------------LONGITUDE:                    "  + str(long) + ":    HE: " + str(fix.longitude))
+            print("------------------------------------------------LONGITUDE:                    "  + str(long) + ":    HE: " + str(self.session.fix.longitude))
         
         time.sleep(5)
         report = self.session.next()
