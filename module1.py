@@ -149,6 +149,8 @@ class logger:
         ###########################################################
         carSens = self.pidsSupported()  #GET SUPPORTED PIDS
         temptime = -1
+
+        ##GPS LOAD
         
         for i in range (5):
             report = self.session.next()
@@ -156,9 +158,13 @@ class logger:
             if report['class'] == 'TPV':
                 if hasattr(report, 'time'):
                     lon = ("longitude: " + str(report.lon))
-            print(" " + str(self.session.fix.longitude))
+            self.session.fix.longitude
+            print("Setting up GPS...")
+            print("LOADING GPS... " + i*20 + "%")
+            os.system("clear")
+        ##
+            
         
-
         startTime = time.time()
         while 1:
     
