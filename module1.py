@@ -13,7 +13,7 @@ import gpsdData
 
 class logger:
     def __init__(self):
-        self.obd = OBD_IO.OBDPort('/dev/ttyUSB0', 1, 5)
+        self.obd = OBD_IO.OBDPort('/dev/pts/2', 1, 5)
         # Listen on port 2947 (gpsd) of localhost
         self.session = gps.gps("localhost", "2947")
         self.session.stream(gps.WATCH_ENABLE | gps.WATCH_NEWSTYLE)
@@ -163,7 +163,17 @@ class logger:
         carSens = self.pidsSupported()  #GET SUPPORTED PIDS
         temptime = -1
 
-        loadGPSFIX(self)
+        #self.loadGPSFIX(self)
+        for i in range (5):
+            report = self.session.next()
+            print (report)
+            if report['class'] == 'TPV':
+                if hasattr(report, 'time'):
+                    lon = ("longitude: " + str(report.lon))
+            self.session.fix.longitude
+            print("Setting up GPS...")
+            print("LOADING GPS... " + i*20 + "%")
+            os.system("clear")
             
         
         startTime = time.time()
