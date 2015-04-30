@@ -165,11 +165,10 @@ class logger:
             self.timeGone = int(((time.time())-startTime)) #Current time - starting time
 
             if self.timeGone>temptime:  #If seconds changes
-                self.seq = ('[TIME,'+ self.timestamp(2) + '][GPS,' + str(self.session.fix.longitude) + "-" + str(self.session.fix.latitude) + "]") 
-                '''
+
                 self.writePidToFile("TIME", self.timestamp(2))
                 self.writePidToFile("GPS", (str(self.session.fix.longitude) + "-" + str(self.session.fix.latitude)))
-                '''
+
                 ## MOST IMPORTANT PIDS (RPM, SPEED, MAF) ##
                 sensorvalue = self.obd.get_sensor_value(obd_sensors.SENSORS[12])
                 self.writePidToFile("010c", str(sensorvalue))
@@ -208,7 +207,7 @@ class logger:
                 file.flush()
                 self.seq = ""
 
-                newFileName = "logs/" + ts1 + " - " + self.timestamp(1) + ".txt"
+                newFileName = ts1 + " - " + self.timestamp(1)
                 if(filename != newFileName):
                     file.close()
                     os.rename(filename, newFileName) 
