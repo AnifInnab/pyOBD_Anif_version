@@ -32,7 +32,7 @@ class logger:
         self.fuelConsumed = 0
         self.carSTOP = True
         self.seq = ""
-  #      self.gpsp = GpsPoller() # create the thread
+  #     self.gpsp = GpsPoller() # create the thread
   #     self.gpsp.start() # start it up
         self.startLogging()
 
@@ -124,7 +124,7 @@ class logger:
          print("Fuelcost: " + str(round(self.fuelCost, 2)) + " kr")
          print("total fuelconsumption: " + str(round(self.totFuelConsumed, 2)) + " liter")
     def writePidToFile(self, command, result):
-        self.seq += "[" + command + ", " + result + "]"
+        self.seq += "[" + command + "," + result + "]"
     def startLogging(self):
         filename = self.timestamp(1) #Get filename in timestampformat(1)
 
@@ -133,10 +133,10 @@ class logger:
         
         file.write("[UID, JHJ0ekidS93_dk3145kIssW_Kj92rIesdDj]-\n")  #RASPBERRY SERIAL (UNIQE ID) CHANGE THIS LATER 
 
-        '''####################### WRITE DTC #########################
+        ####################### WRITE DTC #########################
         self.obd.send_command("0101")
         nrOfDTC = self.obd.nrOfDTC(self.obd.get_result())
-        #print(nrOfDTC)
+        print(nrOfDTC)
         if nrOfDTC != 0:
             self.obd.send_command("03")
             dtc = self.obd.interpret_DTCresult( self.obd.get_result() )
@@ -146,7 +146,7 @@ class logger:
                 self.writePidToFile("ERROR", dtcCodes[i])
             file.write(self.seq + "-\n")
             time.sleep(10)
-        ###########################################################'''
+        ###########################################################
         carSens = self.pidsSupported()  #GET SUPPORTED PIDS
         temptime = -1
         
