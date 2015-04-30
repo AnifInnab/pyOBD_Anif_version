@@ -137,7 +137,7 @@ class logger:
         self.obd.send_command("0101")
         nrOfDTC = self.obd.nrOfDTC(self.obd.get_result())
         print(nrOfDTC)
-        if nrOfDTC != 0:
+        if nrOfDTC != "NODATA":
             self.obd.send_command("03")
             dtc = self.obd.interpret_DTCresult( self.obd.get_result() )
             dtcCodes = (OBD_IO.decrypt_dtc_code(dtc, nrOfDTC))
