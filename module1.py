@@ -6,17 +6,15 @@ import os
 import datetime
 import threading
 import gps
-
-#import gpsdData
-    
+import gpsdData
 #\\\\.\\CNCB0
 
-
+    
 
 class logger:
     def __init__(self):
-        self.obd = OBD_IO.OBDPort('/dev/pts/1', 1, 5)
-         # Listen on port 2947 (gpsd) of localhost
+        self.obd = OBD_IO.OBDPort('/dev/ttyUSB0', 1, 5)
+        # Listen on port 2947 (gpsd) of localhost
         self.session = gps.gps("localhost", "2947")
         self.session.stream(gps.WATCH_ENABLE | gps.WATCH_NEWSTYLE)
         self.totFuelConsumed = 0
@@ -27,15 +25,10 @@ class logger:
         self.nrOfResponses = 0.000000001
         self.timeGone = 0
         self.meters = 0
-        self.nrOfStops = 0
-        self.stopTrigger = 1
         self.fuelConsumed = 0
         self.carSTOP = True
         self.seq = ""
-  #     self.gpsp = GpsPoller() # create the thread
-  #     self.gpsp.start() # start it up
         self.startLogging()
-
     def timestamp(self, format):
          ts = time.time()
          if format == 2:
@@ -55,7 +48,7 @@ class logger:
 
          hours = (self.timeGone/3600)
          fe = (meanSpeed*100)/(0.0001 + meanRPM/100)
-         se = ((75*self.nrOfStops)/(0.0001 + hours))
+         se = ((75*1)/(0.0001 + hours))
          te =  (meanSpeedChange*20)
          ecopoints = (fe) - se - te
          return ecopoints
@@ -83,9 +76,6 @@ class logger:
          print("Current MAF: " + str(curMAF)+" grams/sec \n")
          print("Mean Speed: " + str(int(round(meanSpeed))) + " km/h")
          print("Mean RPM: " + str(int(round(meanRPM))) + " rpm\n")
-
-
-         print("nrOfStops: " + str(self.nrOfStops))
 
          print("Mean change in speed: " + str(int(round(meanSpeedChange))) + "km/h per seconds")
     
@@ -125,15 +115,7 @@ class logger:
          print("total fuelconsumption: " + str(round(self.totFuelConsumed, 2)) + " liter")
     def writePidToFile(self, command, result):
         self.seq += "[" + command + "," + result + "]"
-    def startLogging(self):
-        filename = self.timestamp(1) #Get filename in timestampformat(1)
-
-        ts1 = filename
-        file = open(filename, "a")
-        
-        file.write("[UID, JHJ0ekidS93_dk3145kIssW_Kj92rIesdDj]-\n")  #RASPBERRY SERIAL (UNIQE ID) CHANGE THIS LATER 
-
-        ####################### WRITE DTC #########################
+    def getDTC(self):
         self.obd.send_command("0101")
         nrOfDTC = self.obd.nrOfDTC(self.obd.get_result())
         print(nrOfDTC)
@@ -145,13 +127,8 @@ class logger:
                 print("Engine DTC errorcode: " + dtcCodes[i] )
                 self.writePidToFile("ERROR", dtcCodes[i])
             file.write(self.seq + "-\n")
-            time.sleep(10)
-        ###########################################################
-        carSens = self.pidsSupported()  #GET SUPPORTED PIDS
-        temptime = -1
-
-        ##GPS LOAD
-        
+            time.sleep(5)
+    def loadGPSFIX(self):
         for i in range (5):
             report = self.session.next()
             print (report)
@@ -162,37 +139,53 @@ class logger:
             print("Setting up GPS...")
             print("LOADING GPS... " + i*20 + "%")
             os.system("clear")
-        ##
+    def startLogging(self):
+        filename = self.timestamp(1) #Get filename in timestampformat(1)
+
+        ts1 = filename
+        file = open(filename, "a")
+        
+        file.write("[UID, JHJ0ekidS93_dk3145kIssW_Kj92rIesdDj]-\n")  #RASPBERRY SERIAL (UNIQE ID) CHANGE THIS LATER 
+
+        self.obd.send_command("0101")
+        nrOfDTC = self.obd.nrOfDTC(self.obd.get_result())
+        print(nrOfDTC)
+        if nrOfDTC != "NODATA":
+            self.obd.send_command("03")
+            dtc = self.obd.interpret_DTCresult( self.obd.get_result() )
+            dtcCodes = (OBD_IO.decrypt_dtc_code(dtc, nrOfDTC))
+            for i in range (int(nrOfDTC)):
+                print("Engine DTC errorcode: " + dtcCodes[i] )
+                self.writePidToFile("ERROR", dtcCodes[i])
+            file.write(self.seq + "-\n")
+            time.sleep(5)
+
+        carSens = self.pidsSupported()  #GET SUPPORTED PIDS
+        temptime = -1
+
+        loadGPSFIX(self)
             
         
         startTime = time.time()
         while 1:
     
             self.timeGone = int(((time.time())-startTime)) #Current time - starting time
-
             if self.timeGone>temptime:  #If seconds changes
 
                 self.writePidToFile("TIME", self.timestamp(2))
-                self.writePidToFile("GPS", (str(self.session.fix.longitude) + "-" + str(self.session.fix.latitude)))
+                #self.writePidToFile("GPS", (str(self.session.fix.longitude) + "-" + str(self.session.fix.latitude)))
 
                 ## MOST IMPORTANT PIDS (RPM, SPEED, MAF) ##
-                sensorvalue = self.obd.get_sensor_value(obd_sensors.SENSORS[12])
+                sensorvalue = self.obd.get_sensor_value(obd_sensors.SENSORS[12]) #rpm
                 self.writePidToFile("010c", str(sensorvalue))
                 self.totVechRPM += sensorvalue
                 curRPM = sensorvalue
 
-                sensorvalue = self.obd.get_sensor_value(obd_sensors.SENSORS[13])
+                sensorvalue = self.obd.get_sensor_value(obd_sensors.SENSORS[13]) #speed
                 self.writePidToFile("010d", str(sensorvalue))
                 curSpeed = sensorvalue
                 self.totVechSpeed += sensorvalue
-                if curSpeed>20:
-                    self.carSTOP = False
-                    self.stopTrigger = 0
-                elif curSpeed<5:
-                    self.carSTOP = True
-                    if self.stopTrigger != 1:
-                        self.nrOfStops += 1
-                    self.stopTrigger = 1
+              
                 ## MAF NOT ALL VECHICLE SUPPORT    -  GET SUPPORT FOR NON-MAF VECHICLES  -  IMAP = RPM * MAP / IAT  -  MAF = (IMAP/120)*(VE/100)*(ED)*(MM)/(R)
                 sensorvalue = self.obd.get_sensor_value(obd_sensors.SENSORS[16])
                 self.writePidToFile("0110", str(sensorvalue))
@@ -200,13 +193,11 @@ class logger:
                 ## 
                 print("________________________________________\n")
                 print("time gone: " + str(self.timeGone) + "s")
-                print("nrOfResponses: " + str(round(self.nrOfResponses)))
-                print("Responses per second: " + str(round(self.nrOfResponses/(self.timeGone+0.0001),2)) + "\n-   -   -   -   -   -   -   -   -   -   -\n                 ENGINE DATA\n-   -   -   -   -   -   -   -   -   -   -")
         
                 self.showData(curSpeed, curRPM, curMAF) 
                 print("-   -   -   -   -   -   -   -   -   -   -\n               FUEL CONSUMPTION\n-   -   -   -   -   -   -   -   -   -   -")
                 self.fuelConsumption(curMAF, curSpeed)
-                print ("Eco-points: " + str(round(self.calcEco())))
+                #print ("Eco-points: " + str(round(self.calcEco())))
         
                 self.seq += "-\n"
                 file.write(self.seq)
@@ -228,22 +219,3 @@ class logger:
 
 
 
-'''
-class GpsPoller(threading.Thread):
-  def __init__(self):
-    threading.Thread.__init__(self)
-    global gpsd #bring it in scope
-    gpsd = gps(mode=WATCH_ENABLE) #starting the stream of info
-
-    self.current_value = None
-    self.running = True #setting the thread running to true
- 
-  def run(self):
-    global gpsd
-    while gpsp.running:
-      gpsd.next() #this will continue to loop and grab EACH set of gpsd info to clear the buffer
- 
-if __name__ == '__main__':
-  gpsp = GpsPoller() # create the thread
-  gpsp.start() # start it up
-'''
