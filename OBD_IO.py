@@ -17,34 +17,35 @@ def decrypt_dtc_code(code, nrOfDTC):
     current = code
     type = ""
     newRow = 0
-    for i in range(0,nrOfDTC):
-        if len(current)<4:
-            print( "Tried to decode bad DTC: " + str(code))
+    if nrOfDTC != "NODATA":
+        for i in range(0,nrOfDTC):
+            if len(current)<4:
+                print( "Tried to decode bad DTC: " + str(code))
 
-        tc = obd_sensors.hex_to_int(current[0]) #typecode
-        tc = tc >> 2
-        if   tc == 0:
-            type = "P"
-        elif tc == 1:
-            type = "C"
-        elif tc == 2:
-            type = "B"
-        elif tc == 3:
-            type = "U"
-        else:
-            print("raise tc")
+            tc = obd_sensors.hex_to_int(current[0]) #typecode
+            tc = tc >> 2
+            if   tc == 0:
+                type = "P"
+            elif tc == 1:
+                type = "C"
+            elif tc == 2:
+                type = "B"
+            elif tc == 3:
+                type = "U"
+            else:
+                print("raise tc")
 
-        dig1 = str(obd_sensors.hex_to_int(current[0]) & 3)
-        dig2 = str(obd_sensors.hex_to_int(current[1]))
-        dig3 = str(obd_sensors.hex_to_int(current[2]))
-        dig4 = str(obd_sensors.hex_to_int(current[3]))
-        dtc.append(type+dig1+dig2+dig3+dig4)
-        newRow+=1
-        if newRow < 3:
-            current = current[4:]
-        else:
-            current = current[6:]
-            newRow=0
+            dig1 = str(obd_sensors.hex_to_int(current[0]) & 3)
+            dig2 = str(obd_sensors.hex_to_int(current[1]))
+            dig3 = str(obd_sensors.hex_to_int(current[2]))
+            dig4 = str(obd_sensors.hex_to_int(current[3]))
+            dtc.append(type+dig1+dig2+dig3+dig4)
+            newRow+=1
+            if newRow < 3:
+                current = current[4:]
+            else:
+                current = current[6:]
+                newRow=0
     return dtc
 
 class OBDPort:
