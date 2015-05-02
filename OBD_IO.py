@@ -85,6 +85,7 @@ class OBDPort:
             return None
          print("MILESTONE2")
          self.ELMver = self.get_result()
+         print(ELMver)
          if(self.ELMver is None):
             self.State = 0
             print("STATE IS 0")
