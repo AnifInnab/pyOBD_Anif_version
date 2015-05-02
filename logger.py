@@ -77,7 +77,7 @@ class logger:
         for i in range(256):
           try: #scan Simulator
             s = serial.Serial("/dev/pts/"+str(i))
-            available.append(s.portstr)
+            portName = (str(s.port))
             s.close()   # explicit close 'cause of delayed GC in java
           except serial.SerialException:
             pass
