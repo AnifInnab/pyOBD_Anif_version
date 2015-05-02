@@ -52,7 +52,6 @@ class OBDPort:
      """ OBDPort abstracts all communication with OBD-II device."""
      def __init__(self,portnum,SERTIMEOUT,RECONNATTEMPTS):
          """Initializes port by resetting device and gettings supported PIDs. """
-         # These should really be set by the user.
          baud     = 38400
          databits = 8
          par      = serial.PARITY_NONE  # parity
@@ -150,12 +149,6 @@ class OBDPort:
          return code
     
      def interpret_DTCresult(self,code):
-         """Internal use only: not a public interface"""
-         # Code will be the string returned from the device.
-         # It should look something like this:
-         # '41 11 0 0\r\r'
-         
-         # 9 seems to be the length of the shortest valid response
          if len(code) < 7:
              #raise Exception("BogusCode")
              print ("Bad code")+code
@@ -176,15 +169,8 @@ class OBDPort:
          code = code[2:]
          return code
      def nrOfDTC(self,code):
-         """Internal use only: not a public interface"""
-         # Code will be the string returned from the device.
-         # It should look something like this:
-         # '41 11 0 0\r\r'
-         
-         # 9 seems to be the length of the shortest valid response
          if len(code) < 7:
-             #raise Exception("BogusCode")
-             print ("Bad code")+code
+             print ("Bad code" + str(code))
          
          # get the first thing returned, echo should be off
          code = string.split(code, "\r")
@@ -201,7 +187,6 @@ class OBDPort:
          # first 4 characters are code from ELM
          code = code[4:6]
          nr = int(code, 16) - 128
-         #nr = obd_sensors.hex_to_int(nr) - 128
          return nr
 
 

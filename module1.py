@@ -137,7 +137,7 @@ class logger:
                     lon = ("longitude: " + str(report.lon))
             self.session.fix.longitude
             print("Setting up GPS...")
-            print("LOADING GPS... " + i*20 + "%")
+            print("LOADING GPS... " + str(i*20) + "%")
             os.system("clear")
     def startLogging(self):
         filename = self.timestamp(1) #Get filename in timestampformat(1)
