@@ -73,15 +73,6 @@ class logger:
             s.close()   # explicit close 'cause of delayed GC in java
           except serial.SerialException:
             pass
-     # Enable obdsim 
-        for i in range(256):
-          try: #scan Simulator
-            s = serial.Serial("/dev/pts/"+str(i))
-            portName = (str(s.port))
-            s.close()   # explicit close 'cause of delayed GC in java
-          except serial.SerialException:
-            pass
-    
         return portName
     def writePidToFile(self, command, result):
         self.seq += "[" + command + "," + result + "]"
