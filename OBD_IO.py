@@ -196,8 +196,10 @@ class OBDPort:
      def get_result(self):
          """Internal use only: not a public interface"""
          #time.sleep(0.01)
+         print("Get_res_function")
          repeat_count = 0
          if self.port is not None:
+             print("port not none")
              buffer = ""
              while 1:
                  c = self.port.read(1)
@@ -219,6 +221,7 @@ class OBDPort:
                     
              #debug_display(self._notify_window, 3, "Get result:" + buffer)
              if(buffer == ""):
+                print("buffer is empty")
                 return None
              return buffer
          else:
