@@ -16,7 +16,7 @@ import serial
 class logger:
     def __init__(self, sessionID, userID):
         self.startFrom = 0
-        self.port = self.scanSerial(startFrom)
+        self.port = self.scanSerial(self.startFrom)
         print(self.port)
         self.obd = "tryNext"
         while obd == "tryNext":
