@@ -87,6 +87,7 @@ class OBDPort:
          self.ELMver = self.get_result()
          if(self.ELMver is None):
             self.State = 0
+            print("STATE IS 0")
             return None
          print("atz response:" + self.ELMver)
          self.send_command("ate0")  # echo off
