@@ -200,6 +200,8 @@ class OBDPort:
              while 1:
                  c = self.port.read(1)
                  print("data output: " + c)
+                 if c != "E" or not 0 or not 9:
+                     print("WRONG")
                  if len(c) == 0:
                     if(repeat_count == 5):
                         break
