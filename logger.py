@@ -104,6 +104,7 @@ class logger:
     def startLogging(self):
         sessionF = open("session.txt", "w")
         sessionF.write(str(self.sessionID))
+        sessionF.close()
         filename = "Session_" + str(self.sessionID) + "_" + self.timestamp(1)
         file = open(filename, "a")
         

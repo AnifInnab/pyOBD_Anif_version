@@ -77,15 +77,13 @@ class OBDPort:
          print("Connecting to ECU...")
          
          try:
-            print("TRY ATZ")
             self.send_command("atz")   # initialize
             time.sleep(1)
          except serial.SerialException:
             self.State = 0
             return None
-         print("MILESTONE2")
+
          self.ELMver = self.get_result()
-         print("ELM VER: " +  ELSMver)
          if(self.ELMver is None):
             self.State = 0
             print("STATE IS 0")
@@ -196,13 +194,12 @@ class OBDPort:
      def get_result(self):
          """Internal use only: not a public interface"""
          #time.sleep(0.01)
-         print("Get_res_function")
          repeat_count = 0
          if self.port is not None:
-             print("port not none")
              buffer = ""
              while 1:
                  c = self.port.read(1)
+                 print("data output: " + c)
                  if len(c) == 0:
                     if(repeat_count == 5):
                         break
