@@ -19,7 +19,7 @@ class logger:
         self.port = self.scanSerial(self.startFrom)
         print(self.port)
         self.obd = "tryNext"
-        while obd == "tryNext":
+        while self.obd == "tryNext":
             self.obd = OBD_IO.OBDPort(self.port, 1, 5)
         # Listen on port 2947 (gpsd) of localhost
         #self.session = gps.gps("localhost", "2947")
