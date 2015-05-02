@@ -82,8 +82,9 @@ class OBDPort:
          except serial.SerialException:
             self.State = 0
             return None
-
          self.ELMver = self.get_result()
+         if self.ELMver == "WRONG":
+             return "tryNext"
          if(self.ELMver is None):
             self.State = 0
             print("STATE IS 0")
@@ -201,7 +202,9 @@ class OBDPort:
                  c = self.port.read(1)
                  print("data output: " + c)
                  if c != "E" or not 0 or not 9 or not 3:
-                     print("WRONG")
+                     print("WRONG PORT, TRYING NEXT...")
+                     return "Wrong"
+                     break;
                  if len(c) == 0:
                     if(repeat_count == 5):
                         break

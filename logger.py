@@ -15,9 +15,12 @@ import serial
 
 class logger:
     def __init__(self, sessionID, userID):
-        self.port = self.scanSerial()
+        self.startFrom = 0
+        self.port = self.scanSerial(startFrom)
         print(self.port)
-        self.obd = OBD_IO.OBDPort(self.port, 1, 5)
+        self.obd = "tryNext"
+        while obd == "tryNext":
+            self.obd = OBD_IO.OBDPort(self.port, 1, 5)
         # Listen on port 2947 (gpsd) of localhost
         #self.session = gps.gps("localhost", "2947")
         #self.session.stream(gps.WATCH_ENABLE | gps.WATCH_NEWSTYLE)
@@ -46,13 +49,13 @@ class logger:
                 print(obd_sensors.SENSORS[i+1].name + ":    NOT SUPPORTED")
         return carSens
 
-    def scanSerial(self):
+    def scanSerial(self, startFrom):
         """scan for available ports. return a list of serial names"""
         portName = ""
      #Enable Bluetooh connection
         for i in range(10):
           try:
-            s = serial.Serial("/dev/rfcomm"+str(i))
+            s = serial.Serial("/dev/rfcomm"+str(i+startFrom))
             portName =  (str(s.port))
             s.close()   # explicit close 'cause of delayed GC in java
           except serial.SerialException:
@@ -60,7 +63,7 @@ class logger:
      #Windows simulator
         for i in range(10):
           try:
-            s = serial.Serial("\\\\.\\CNCB"+str(i))
+            s = serial.Serial("\\\\.\\CNCB"+str(i+startFrom))
             portName = (str(s.port))
             s.close()   # explicit close 'cause of delayed GC in java
           except serial.SerialException:
@@ -68,7 +71,7 @@ class logger:
      # Enable USB connection
         for i in range(256):
           try:
-            s = serial.Serial("/dev/ttyUSB"+str(i))
+            s = serial.Serial("/dev/ttyUSB"+str(i+startFrom))
             portName =(str(s.port))
             s.close()   # explicit close 'cause of delayed GC in java
           except serial.SerialException:
