@@ -77,12 +77,13 @@ class OBDPort:
          print("Connecting to ECU...")
          
          try:
+            print("TRY ATZ")
             self.send_command("atz")   # initialize
             time.sleep(1)
          except serial.SerialException:
             self.State = 0
             return None
-
+         print("MILESTONE2")
          self.ELMver = self.get_result()
          if(self.ELMver is None):
             self.State = 0
