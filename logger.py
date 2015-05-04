@@ -20,8 +20,8 @@ class logger:
         print(self.port)
         self.obd = OBD_IO.OBDPort(self.port, 1, 5)
         # Listen on port 2947 (gpsd) of localhost
-        #self.session = gps.gps("localhost", "2947")
-        #self.session.stream(gps.WATCH_ENABLE | gps.WATCH_NEWSTYLE)
+        # self.session = gps.gps("localhost", "2947")
+        # self.session.stream(gps.WATCH_ENABLE | gps.WATCH_NEWSTYLE)
         self.UID = userID
         self.sessionID = sessionID + 1
         self.nrOfResponses = 0.000000001
