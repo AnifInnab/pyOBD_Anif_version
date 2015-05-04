@@ -83,8 +83,6 @@ class OBDPort:
             self.State = 0
             return None
          self.ELMver = self.get_result()
-         if self.ELMver == "WRONG":
-             return "tryNext"
          if(self.ELMver is None):
             self.State = 0
             print("STATE IS 0")
@@ -101,8 +99,7 @@ class OBDPort:
             return None
             
          print(ready)
-         return None
-              
+         return None            
      def close(self):
          """ Resets device and closes all associated filehandles"""
          
@@ -112,7 +109,6 @@ class OBDPort:
          
          self.port = None
          self.ELMver = "Unknown"
-
      def send_command(self, cmd):
          """Internal use only: not a public interface"""
          if self.port:
@@ -122,7 +118,6 @@ class OBDPort:
                  self.port.write(c)
              self.port.write("\r\n")
              #debug_display(self._notify_window, 3, "Send command:" + cmd)
-
      def interpret_result(self,code):
          """Internal use only: not a public interface"""
          # Code will be the string returned from the device.
@@ -149,7 +144,6 @@ class OBDPort:
          # first 4 characters are code from ELM
          code = code[4:]
          return code
-    
      def interpret_DTCresult(self,code):
          if len(code) < 7:
              #raise Exception("BogusCode")
@@ -190,8 +184,6 @@ class OBDPort:
          code = code[4:6]
          nr = int(code, 16) - 128
          return nr
-
-
      def get_result(self):
          """Internal use only: not a public interface"""
          #time.sleep(0.01)
@@ -200,11 +192,7 @@ class OBDPort:
              buffer = ""
              while 1:
                  c = self.port.read(1)
-                 print("data output: " + c)
-                 if c != "E" or not 0 or not 9 or not 3:
-                     print("WRONG PORT, TRYING NEXT...")
-                     return "Wrong"
-                     break;
+                 #print("data output: " + c)
                  if len(c) == 0:
                     if(repeat_count == 5):
                         break
@@ -229,7 +217,6 @@ class OBDPort:
          else:
             print("PORT NOT CONNECTED...")
          return None
-
      # get sensor value from command
      def get_sensor_value(self,sensor):
          """Internal use only: not a public interface"""
@@ -245,7 +232,6 @@ class OBDPort:
              return "NORESPONSE"
              
          return data
-
      # return string of sensor name and value from sensor index
      def sensor(self , sensor_index):
          """Returns 3-tuple of given sensors. 3-tuple consists of
@@ -261,17 +247,3 @@ class OBDPort:
              names.append(s.name)
          return names
                  
-
-     def log(self, sensor_index, filename): 
-          file = open(filename, "w")
-          start_time = time.time() 
-          if file:
-               data = self.sensor(sensor_index)
-               file.write("%s     \t%s(%s)\n" % \
-                         ("Time", string.strip(data[0]), data[2])) 
-               while 1:
-                    now = time.time()
-                    data = self.sensor(sensor_index)
-                    line = "%.6f,\t%s\n" % (now - start_time, data[1])
-                    file.write(line)
-                    file.flush()

@@ -5,18 +5,18 @@ import time
 import os
 import datetime
 import threading
-import gps
-import gpsdData
+#import gps
+#import gpsdData
 #\\\\.\\CNCB0
 
     
 
 class logger:
     def __init__(self):
-        self.obd = OBD_IO.OBDPort('/dev/pts/2', 1, 5)
+        self.obd = OBD_IO.OBDPort('\\\\.\\CNCB0', 1, 5)
         # Listen on port 2947 (gpsd) of localhost
-        self.session = gps.gps("localhost", "2947")
-        self.session.stream(gps.WATCH_ENABLE | gps.WATCH_NEWSTYLE)
+        #self.session = gps.gps("localhost", "2947")
+        #self.session.stream(gps.WATCH_ENABLE | gps.WATCH_NEWSTYLE)
         self.totFuelConsumed = 0
         self.totSpeedChange = 0
         self.totVechSpeed = 0
@@ -162,7 +162,7 @@ class logger:
 
         carSens = self.pidsSupported()  #GET SUPPORTED PIDS
         temptime = -1
-
+        '''
         #self.loadGPSFIX(self)
         for i in range (5):
             report = self.session.next()
@@ -174,7 +174,7 @@ class logger:
             print("Setting up GPS...")
             print("LOADING GPS... " + i*20 + "%")
             os.system("clear")
-            
+         '''
         
         startTime = time.time()
         while 1:
