@@ -7,21 +7,25 @@ import datetime
 import threading
 import platform
 import serial
-#import gps
-#import gpsdData
+import gps
+import gpsdData
 #\\\\.\\CNCB0
 
     
 
 class logger:
     def __init__(self, sessionID, userID):
+        os.system("sudo killall gpsd")
+        os.system("sudo gpsd /dev/ttyUSB1 -F /var/run/gpsd.sock")
+        print("Restarting GPS...")
+        time.sleep(10)
         self.startFrom = 0
         self.port = self.scanSerial()
         print(self.port)
         self.obd = OBD_IO.OBDPort(self.port, 1, 5)
         # Listen on port 2947 (gpsd) of localhost
-        # self.session = gps.gps("localhost", "2947")
-        # self.session.stream(gps.WATCH_ENABLE | gps.WATCH_NEWSTYLE)
+        self.session = gps.gps("localhost", "2947")
+        self.session.stream(gps.WATCH_ENABLE | gps.WATCH_NEWSTYLE)
         self.UID = userID
         self.sessionID = sessionID + 1
         self.nrOfResponses = 0.000000001
@@ -128,7 +132,7 @@ class logger:
         temptime = -1
 
         #self.loadGPSFIX(self)
-        '''
+        
         for i in range (5):
             report = self.session.next()
             print (report)
@@ -139,7 +143,7 @@ class logger:
             print("Setting up GPS...")
             print("LOADING GPS... " + i*20 + "%")
             os.system("clear")
-        '''
+        
         
         startTime = time.time()
         while 1:
@@ -148,7 +152,7 @@ class logger:
             if self.timeGone>temptime:  #If seconds changes
 
                 self.writePidToFile("TIME", self.timestamp(2))
-                #self.writePidToFile("GPS", (str(self.session.fix.longitude) + "-" + str(self.session.fix.latitude)))
+                self.writePidToFile("GPS", (str(self.session.fix.longitude) + "-" + str(self.session.fix.latitude)))
                 ## MOST IMPORTANT PIDS (RPM, SPEED, MAF, IAT) ##
                 sensorvalue = self.obd.get_sensor_value(obd_sensors.SENSORS[12]) #rpm
                 self.writePidToFile("010C", str(sensorvalue))
@@ -170,7 +174,7 @@ class logger:
                     self.writePidToFile("0105", str(coolTemp))
                 
                     
-                self.seq += "-\n"
+                self.seq += "+\n"
                 file.write(self.seq)
                 file.flush()
 
