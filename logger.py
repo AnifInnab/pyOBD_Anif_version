@@ -132,7 +132,7 @@ class logger:
         temptime = -1
 
         #self.loadGPSFIX(self)
-        '''
+        
         for i in range (5):
             report = self.session.next()
             print (report)
@@ -143,7 +143,7 @@ class logger:
             print("Setting up GPS...")
             print("LOADING GPS... " + str(i*20) + "%")
             os.system("clear")
-        '''
+        
         
         startTime = time.time()
         while 1:
