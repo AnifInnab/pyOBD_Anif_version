@@ -8,7 +8,7 @@ import threading
 import platform
 import serial
 import gps
-import gpsdData
+#import gpsdData
 #\\\\.\\CNCB0
 
     
@@ -16,11 +16,11 @@ import gpsdData
 class logger:
     def __init__(self, sessionID, userID):
         os.system("sudo killall gpsd")
-        os.system("sudo gpsd /dev/ttyUSB1 -F /var/run/gpsd.sock")
+        os.system("sudo gpsd /dev/ttyUSB0 -F /var/run/gpsd.sock")
         print("Restarting GPS...")
         time.sleep(10)
         self.startFrom = 0
-        self.port = self.scanSerial()
+        self.port = "/dev/pts/1"#self.scanSerial()
         print(self.port)
         self.obd = OBD_IO.OBDPort(self.port, 1, 5)
         # Listen on port 2947 (gpsd) of localhost
@@ -132,7 +132,7 @@ class logger:
         temptime = -1
 
         #self.loadGPSFIX(self)
-        
+        '''
         for i in range (5):
             report = self.session.next()
             print (report)
@@ -141,9 +141,9 @@ class logger:
                     lon = ("longitude: " + str(report.lon))
             self.session.fix.longitude
             print("Setting up GPS...")
-            print("LOADING GPS... " + i*20 + "%")
+            print("LOADING GPS... " + str(i*20) + "%")
             os.system("clear")
-        
+        '''
         
         startTime = time.time()
         while 1:
