@@ -20,7 +20,7 @@ class logger:
         print("Restarting GPS...")
         time.sleep(10)
         self.startFrom = 0
-        self.port = "/dev/pts/1"#self.scanSerial()
+        self.port = "/dev/pts/0"#self.scanSerial()
         print(self.port)
         self.obd = OBD_IO.OBDPort(self.port, 1, 5)
         # Listen on port 2947 (gpsd) of localhost
@@ -105,6 +105,8 @@ class logger:
             os.system("clear")
 
     def startLogging(self):
+        nineSec = 0
+        fiveSec = 0
         sessionF = open("session.txt", "w")
         sessionF.write(str(self.sessionID))
         sessionF.close()
@@ -112,9 +114,9 @@ class logger:
         file = open(filename, "a")
         
         self.writePidToFile("UID", self.UID)         #RASPBERRY SERIAL (UNIQE ID) CHANGE THIS LATER 
-        self.seq += "-\n"
+        self.seq += "+\n"
         self.writePidToFile("SID", str(self.sessionID))
-        self.seq += "-\n"
+        self.seq += "+\n"
         self.obd.send_command("0101")
         nrOfDTC = self.obd.nrOfDTC(self.obd.get_result())
         print(nrOfDTC)
@@ -125,7 +127,7 @@ class logger:
             for i in range (int(nrOfDTC)):
                 print("Engine DTC errorcode: " + dtcCodes[i] )
                 self.writePidToFile("ERROR", dtcCodes[i])
-            self.seq += "-\n"
+            self.seq += "+\n"
             time.sleep(2)
 
         carSens = self.pidsSupported()  #GET SUPPORTED PIDS
@@ -166,12 +168,16 @@ class logger:
                     self.writePidToFile("0110", str(sensorvalue))
                     curMAF = sensorvalue
                 
-                if(carSens[13] == "1"):
-                    iatSensor = self.obd.get_sensor_value(obd_sensors.SENSORS[14]) #intake air temprature update every 5s
-                    self.writePidToFile("010F", str(iatSensor))
-                if(carSens[4] == "1"):
-                    coolTemp = self.obd.get_sensor_value(obd_sensors.SENSORS[5]) #coolant temprature update every 8s
-                    self.writePidToFile("0105", str(coolTemp))
+                if nineSec == 9:
+                    if(carSens[13] == "1"):
+                        iatSensor = self.obd.get_sensor_value(obd_sensors.SENSORS[14]) #intake air temprature update every 5s
+                        self.writePidToFile("010F", str(iatSensor))
+                        nineSec = 0
+                if fiveSec == 5:
+                    if(carSens[4] == "1"):
+                        coolTemp = self.obd.get_sensor_value(obd_sensors.SENSORS[5]) #coolant temprature update every 8s
+                        self.writePidToFile("0105", str(coolTemp))
+                        fiveSec = 0
                 
                     
                 self.seq += "+\n"
@@ -184,8 +190,8 @@ class logger:
 
                 self.nrOfResponses += 1
                 temptime = self.timeGone
-                
-
+                fiveSec += 1
+                nineSec += 1
 
 
 
