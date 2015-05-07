@@ -18,7 +18,7 @@ class logger:
         os.system("sudo killall gpsd")
         os.system("sudo gpsd /dev/ttyUSB0 -F /var/run/gpsd.sock")
         print("Restarting GPS...")
-        time.sleep(10)
+        time.sleep(30) # LET GPS ESTABLISH FIX
         self.startFrom = 0
         self.port = "/dev/pts/0"#self.scanSerial()
         print(self.port)
@@ -101,7 +101,6 @@ class logger:
                     lon = ("longitude: " + str(report.lon))
             self.session.fix.longitude
             print("Setting up GPS...")
-            print("LOADING GPS... " + str(i*20) + "%")
             os.system("clear")
 
     def startLogging(self):
@@ -142,10 +141,7 @@ class logger:
                 if hasattr(report, 'time'):
                     lon = ("longitude: " + str(report.lon))
             self.session.fix.longitude
-            print("Setting up GPS...")
-            print("LOADING GPS... " + str(i*20) + "%")
-            os.system("clear")
-        
+            print("Setting up GPS...")        
         
         startTime = time.time()
         while 1:
@@ -155,6 +151,7 @@ class logger:
 
                 self.writePidToFile("TIME", self.timestamp(2))
                 self.writePidToFile("GPS", (str(self.session.fix.longitude) + "-" + str(self.session.fix.latitude)))
+                self.session.next()
                 ## MOST IMPORTANT PIDS (RPM, SPEED, MAF, IAT) ##
                 sensorvalue = self.obd.get_sensor_value(obd_sensors.SENSORS[12]) #rpm
                 self.writePidToFile("010C", str(sensorvalue))
@@ -162,19 +159,19 @@ class logger:
                 sensorvalue = self.obd.get_sensor_value(obd_sensors.SENSORS[13]) #speed
                 self.writePidToFile("010D", str(sensorvalue))
               
-                ## MAF NOT ALL VECHICLE SUPPORT    -  GET SUPPORT FOR NON-MAF VECHICLES  -  IMAP = RPM * MAP / IAT  -  MAF = (IMAP/120)*(VE/100)*(ED)*(MM)/(R)
+                ## MAF - NOT ALL VECHICLE SUPPORT    -  GET SUPPORT FOR NON-MAF VECHICLES  -  IMAP = RPM * MAP / IAT  -  MAF = (IMAP/120)*(VE/100)*(ED)*(MM)/(R)
                 if(carSens[15] == "1"):
                     sensorvalue = self.obd.get_sensor_value(obd_sensors.SENSORS[16]) #maf
                     self.writePidToFile("0110", str(sensorvalue))
                     curMAF = sensorvalue
                 
-                if nineSec == 9:
-                    if(carSens[13] == "1"):
+                #if nineSec == 9:
+                if(carSens[13] == "1"):
                         iatSensor = self.obd.get_sensor_value(obd_sensors.SENSORS[14]) #intake air temprature update every 5s
                         self.writePidToFile("010F", str(iatSensor))
                         nineSec = 0
-                if fiveSec == 5:
-                    if(carSens[4] == "1"):
+                #if fiveSec == 5:
+                if(carSens[4] == "1"):
                         coolTemp = self.obd.get_sensor_value(obd_sensors.SENSORS[5]) #coolant temprature update every 8s
                         self.writePidToFile("0105", str(coolTemp))
                         fiveSec = 0
@@ -186,7 +183,6 @@ class logger:
 
                 print(self.seq)
                 self.seq = ""
-
 
                 self.nrOfResponses += 1
                 temptime = self.timeGone
