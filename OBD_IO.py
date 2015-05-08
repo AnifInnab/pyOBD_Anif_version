@@ -69,10 +69,15 @@ class OBDPort:
              parity = par, stopbits = sb, bytesize = databits,timeout = to)
              
          except serial.SerialException as e:
-             print (e)
+             print ("FELMEDDELANDE: " + e)
              time.sleep(2)
              self.__init__(self.portname, 1, 7)
              self.State = 0
+             return None
+         except serial.serialutil.SerialException as a:
+             print(a)
+             time.sleep(2)
+             self.__init__(self.portname, 1, 7)
              return None
              
          print("Interface successfully " + self.port.portstr + " opened")
