@@ -70,6 +70,7 @@ class OBDPort:
              
          except serial.SerialException as e:
              print (e)
+             time.sleep(2)
              self.__init__(self.portname, 1, 7)
              self.State = 0
              return None
