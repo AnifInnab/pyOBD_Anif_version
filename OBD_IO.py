@@ -56,7 +56,7 @@ class OBDPort:
          databits = 8
          par      = serial.PARITY_NONE  # parity
          sb       = 1                   # stop bits
-         self.to       = SERTIMEOUT
+         to       = SERTIMEOUT
          self.ELMver = "Unknown"
          self.State = 1 #state SERIAL is 1 connected, 0 disconnected (connection failed)
          self.port = None
@@ -66,7 +66,7 @@ class OBDPort:
 
          try:
              self.port = serial.Serial(portnum,baud, \
-             parity = par, stopbits = sb, bytesize = databits,timeout = self.to)
+             parity = par, stopbits = sb, bytesize = databits,timeout = to)
              
          except serial.SerialException as e:
              print (e)
@@ -94,7 +94,7 @@ class OBDPort:
                 except serial.SerialException:
                     self.State = 0
                     print("NO OR ONLY GPS-USB ATTACHED... PLEASE ATTACH ELM327-DEVICE...")
-                    self.__init__(self.portname, self.to, 7)
+                    self.__init__(self.portname, 1, 7)
                     return None
              elif(self.port.name == "/dev/ttyUSB1"):
                 try:
@@ -104,7 +104,7 @@ class OBDPort:
                 except serial.SerialException:
                     self.State = 0
                     print("NO CORRECT OR ONLY GPS-USB ATTACHED... PLEASE MAKE SURE ELM327-DEVICE IS ATTACHED...")
-                    self.__init__(self.portname, self.to, 7)
+                    self.__init__(self.portname, 1, 7)
                     return None
          print("atz response:" + self.ELMver)
          self.send_command("ate0")  # echo off
