@@ -84,7 +84,8 @@ class OBDPort:
             return None
 
          self.ELMver = self.get_result()
-         if(self.ELMver == None):
+         
+         if(self.ELMver is None):
              print("THIS IS NOT ELM - Changing port other ttyUSB")
              if(self.port.name == "/dev/ttyUSB0"):
                 print("CHANGING PORT TO /DEV/TTYUSB1")
@@ -94,10 +95,10 @@ class OBDPort:
                 print("CHANGING PORT TO /DEV/TTYUSB0")
                 self.port = serial.Serial("/dev/ttyUSB0",baud, \
                 parity = par, stopbits = sb, bytesize = databits,timeout = to)
-         if(self.ELMver is None):
-            self.State = 0
-            print("STATE IS 0")
-            return None
+             else:
+                self.State = 0
+                print("STATE IS 0")
+                return None
          print("atz response:" + self.ELMver)
          self.send_command("ate0")  # echo off
          print("ate0 response:" + self.get_result())
