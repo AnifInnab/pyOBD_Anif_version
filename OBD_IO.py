@@ -82,7 +82,22 @@ class OBDPort:
          except serial.SerialException:
             self.State = 0
             return None
+
          self.ELMver = self.get_result()
+         print(self.ELMver)
+         test = self.ELMver[0]
+
+         if(test != "E"):
+             print(self.ELMver)
+             print("THIS IS NOT ELM - Changing port other ttyUSB")
+             if(self.port.name == "/dev/ttyUSB0"):
+                print("CHANGING PORT TO /DEV/TTYUSB1")
+                self.port = serial.Serial("/dev/ttyUSB1",baud, \
+                parity = par, stopbits = sb, bytesize = databits,timeout = to)
+             elif(self.port.name == "/dev/ttyUSB1"):
+                print("CHANGING PORT TO /DEV/TTYUSB0")
+                self.port = serial.Serial("/dev/ttyUSB0",baud, \
+                parity = par, stopbits = sb, bytesize = databits,timeout = to)
          if(self.ELMver is None):
             self.State = 0
             print("STATE IS 0")
@@ -247,3 +262,5 @@ class OBDPort:
              names.append(s.name)
          return names
                  
+     def getPortName(self):
+         return self.port.name
