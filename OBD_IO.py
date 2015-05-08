@@ -56,17 +56,17 @@ class OBDPort:
          databits = 8
          par      = serial.PARITY_NONE  # parity
          sb       = 1                   # stop bits
-         to       = SERTIMEOUT
+         self.to       = SERTIMEOUT
          self.ELMver = "Unknown"
          self.State = 1 #state SERIAL is 1 connected, 0 disconnected (connection failed)
          self.port = None
-         
+         self.portname = portnum
 
          print("Opening interface (serial port)")
 
          try:
              self.port = serial.Serial(portnum,baud, \
-             parity = par, stopbits = sb, bytesize = databits,timeout = to)
+             parity = par, stopbits = sb, bytesize = databits,timeout = self.to)
              
          except serial.SerialException as e:
              print (e)
@@ -85,18 +85,19 @@ class OBDPort:
 
          self.ELMver = self.get_result()
          if(self.ELMver is None):
-             print("THIS IS NOT ELM - Changing port other ttyUSB")
+             print("THIS IS NOT AN ELM-DEVICE - Changing port....")
              if(self.port.name == "/dev/ttyUSB0"):
-                print("CHANGING PORT TO /DEV/TTYUSB1")
+                print("Trying port ttyUSB1...")
                 self.port = serial.Serial("/dev/ttyUSB1",baud, \
                 parity = par, stopbits = sb, bytesize = databits,timeout = to)
              elif(self.port.name == "/dev/ttyUSB1"):
-                print("CHANGING PORT TO /DEV/TTYUSB0")
+                print("Trying port ttyUSB0")
                 self.port = serial.Serial("/dev/ttyUSB0",baud, \
                 parity = par, stopbits = sb, bytesize = databits,timeout = to)
              else:
                 self.State = 0
-                print("STATE IS 0")
+                print("NO OR ONLY GPS-USB ATTACHED... PLEASE ATTACH ELM327-DEVICE...")
+                self.__init__(self.portname, self.to, 7)
                 return None
          print("atz response:" + self.ELMver)
          self.send_command("ate0")  # echo off
