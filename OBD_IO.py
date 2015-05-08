@@ -84,11 +84,7 @@ class OBDPort:
             return None
 
          self.ELMver = self.get_result()
-         print(self.ELMver)
-         test = self.ELMver[0]
-
-         if(test != "E"):
-             print(self.ELMver)
+         if(self.ELMver == None):
              print("THIS IS NOT ELM - Changing port other ttyUSB")
              if(self.port.name == "/dev/ttyUSB0"):
                 print("CHANGING PORT TO /DEV/TTYUSB1")
