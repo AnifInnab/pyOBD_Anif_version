@@ -84,7 +84,6 @@ class OBDPort:
             return None
 
          self.ELMver = self.get_result()
-         
          if(self.ELMver is None):
              print("THIS IS NOT ELM - Changing port other ttyUSB")
              if(self.port.name == "/dev/ttyUSB0"):
@@ -207,6 +206,7 @@ class OBDPort:
                  #print("data output: " + c)
                  if len(c) == 0:
                     if(repeat_count == 5):
+                        return None
                         break
                     print ("NO DATA RECIEVED!\n")
                     repeat_count = repeat_count + 1
