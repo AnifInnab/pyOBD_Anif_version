@@ -7,7 +7,7 @@ import datetime
 import threading
 import platform
 import serial
-#import gps
+import gps
 #import gpsdData
 #\\\\.\\CNCB0
 
@@ -143,7 +143,7 @@ class logger:
         temptime = -1
 
         #self.loadGPSFIX(self)
-        '''
+        
         for i in range (5):
             report = self.session.next()
             print (report)
@@ -152,7 +152,7 @@ class logger:
                     lon = ("longitude: " + str(report.lon))
             self.session.fix.longitude
             print("Setting up GPS...")        
-        '''
+        
         startTime = time.time()
 
         coolTemp = self.obd.get_sensor_value(obd_sensors.SENSORS[5]) #coolant temprature update every 8s
@@ -163,8 +163,8 @@ class logger:
             if self.timeGone>temptime:  #If seconds changes
 
                 self.writePidToFile("TIME", self.timestamp(2))
-                #self.writePidToFile("GPS", (str(self.session.fix.longitude) + "-" + str(self.session.fix.latitude)))
-                #self.session.next()
+                self.writePidToFile("GPS", (str(self.session.fix.longitude) + "-" + str(self.session.fix.latitude)))
+                self.session.next()
                 ## MOST IMPORTANT PIDS (RPM, SPEED, MAF, IAT) ##
                 sensorvalue = self.obd.get_sensor_value(obd_sensors.SENSORS[12]) #rpm
                 self.writePidToFile("010C", str(sensorvalue))
