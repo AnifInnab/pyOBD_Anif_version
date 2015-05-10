@@ -20,10 +20,10 @@ class logger:
 
         print("Restarting GPS...")
         os.system("sudo killall gpsd")
-        print("OBD PORT: " + self.obd.getPortName)
-        if(self.obd.getPortName == "/dev/ttyUSB0"):
+        print("OBD PORT: " + self.obd.getPortName())
+        if(self.obd.getPortName() == "/dev/ttyUSB0"):
             os.system("sudo gpsd /dev/ttyUSB1 -F /var/run/gpsd.sock")
-        elif(self.obd.getPortName == "/dev/ttyUSB1"):
+        elif(self.obd.getPortName() == "/dev/ttyUSB1"):
             os.system("sudo gpsd /dev/ttyUSB0 -F /var/run/gpsd.sock")
 
         time.sleep(20) # LET GPS ESTABLISH FIX
