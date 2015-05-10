@@ -69,6 +69,7 @@ class OBDPort:
          except serial.SerialException as e:
              print (e)
              time.sleep(2)
+             self.close()
              self.__init__(self.portname, 1, 7)
              self.State = 0
              return None
@@ -80,6 +81,7 @@ class OBDPort:
             time.sleep(1)
          except serial.SerialException:
             self.State = 0
+            self.close()
             self.__init__(self.portname, 1, 7)
             return None
 
@@ -197,9 +199,13 @@ class OBDPort:
          """Internal use only: not a public interface"""
          #time.sleep(0.01)
          repeat_count = 0
+         counter = 0
          if self.port is not None:
              buffer = ""
              while 1:
+                 if(counter == 40):
+                     self.close()
+                     self.__init__(self.portname, 1, 7)
                  c = self.port.read(1)
                  print("output: " + c)
                  #print("data output: " + c)
@@ -224,6 +230,7 @@ class OBDPort:
                 print("buffer is empty")
                 return None
              return buffer
+             counter += 1
          else:
             print("PORT NOT CONNECTED...")
          return None
