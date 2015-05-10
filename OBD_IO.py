@@ -104,7 +104,7 @@ class OBDPort:
                     print("NO CORRECT OR ONLY GPS-USB ATTACHED...\nPLEASE MAKE SURE ELM327-DEVICE IS ATTACHED...")
                     self.__init__(self.portname, 1, 7)
                     return None
-         print("atz response:" + self.ELMver)
+         #print("atz response:" + self.ELMver)
          self.send_command("ate0")  # echo off
          print("ate0 response:" + self.get_result())
          self.send_command("0100")
@@ -112,7 +112,7 @@ class OBDPort:
          
          ready = self.interpret_result(ready)
 
-         while(ready[0] is not "1" or ready[0] is not "0"):
+         while(ready[0] is not "1" or ready[0] is not "0" or ready[0] is not "4"):
             print("Reconnecting...")
             self.send_command("0100")
             ready = self.get_result()
