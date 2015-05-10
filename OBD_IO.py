@@ -110,6 +110,7 @@ class OBDPort:
          self.send_command("0100")
          ready = self.get_result()
          
+         ready = self.interpret_result(ready)
 
          while(ready[0] is not "1" or ready[0] is not "0"):
             print("Reconnecting...")
