@@ -111,7 +111,7 @@ class OBDPort:
          ready = self.get_result()
          
          print("ready: " + ready)
-         while(ready[0] is not "1" or ready[0] is not "0" or ready[0] is not "4"):
+         while(ready[0] != "4"):
             print("Reconnecting...")
             print("Read[0]: " + ready[0])
             self.send_command("0100")
