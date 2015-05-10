@@ -201,6 +201,7 @@ class OBDPort:
              buffer = ""
              while 1:
                  c = self.port.read(1)
+                 print("output: " + c)
                  #print("data output: " + c)
                  if len(c) == 0:
                     if(repeat_count == 5):
@@ -219,7 +220,6 @@ class OBDPort:
                  if buffer != "" or c != ">": #if something is in buffer, add everything
                     buffer = buffer + c
                     
-             #debug_display(self._notify_window, 3, "Get result:" + buffer)
              if(buffer == ""):
                 print("buffer is empty")
                 return None
