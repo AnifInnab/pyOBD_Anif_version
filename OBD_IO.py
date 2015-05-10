@@ -256,4 +256,5 @@ class OBDPort:
          return names
                  
      def getPortName(self):
-         return self.port.portstr
+         portname = self.port.portstr
+         return portname
