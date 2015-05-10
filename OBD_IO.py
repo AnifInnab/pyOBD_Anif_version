@@ -61,6 +61,7 @@ class OBDPort:
          self.State = 1 #state SERIAL is 1 connected, 0 disconnected (connection failed)
          self.port = None
          self.portname = portnum
+         print("POOOOOOOOOOOOOOOOOORT :                  " + self.portname)
          print("Opening serial port...")
          try:
              self.port = serial.Serial(portnum,baud, \
@@ -72,6 +73,7 @@ class OBDPort:
              self.State = 0
              return None
          print("Interface successfully " + self.port.portstr + " opened")
+
          print("Connecting to ECU...")
          try:
             self.send_command("atz")   # initialize
