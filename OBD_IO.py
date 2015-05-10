@@ -61,38 +61,29 @@ class OBDPort:
          self.State = 1 #state SERIAL is 1 connected, 0 disconnected (connection failed)
          self.port = None
          self.portname = portnum
-
-         print("Opening interface (serial port)")
-
+         print("Opening serial port...")
          try:
              self.port = serial.Serial(portnum,baud, \
              parity = par, stopbits = sb, bytesize = databits,timeout = to)
-             
          except serial.SerialException as e:
-             print ("FELMEDDELANDE: " + e)
+             print (e)
              time.sleep(2)
              self.__init__(self.portname, 1, 7)
              self.State = 0
              return None
-         except serial.serialutil.SerialException as a:
-             print(a)
-             time.sleep(2)
-             self.__init__(self.portname, 1, 7)
-             return None
-             
          print("Interface successfully " + self.port.portstr + " opened")
          print("Connecting to ECU...")
-         
          try:
             self.send_command("atz")   # initialize
             time.sleep(1)
          except serial.SerialException:
             self.State = 0
+            self.__init__(self.portname, 1, 7)
             return None
 
          self.ELMver = self.get_result()
          if(self.ELMver is None):
-             print("THIS IS NOT AN ELM-DEVICE - Changing port....")
+             print("- THIS IS NOT AN USB ELM-DEVICE - \nChanging port....")
              if(self.port.name == "/dev/ttyUSB0"):
                 try:
                     print("Trying port ttyUSB1...")
@@ -110,7 +101,7 @@ class OBDPort:
                     parity = par, stopbits = sb, bytesize = databits,timeout = to)
                 except serial.SerialException:
                     self.State = 0
-                    print("NO CORRECT OR ONLY GPS-USB ATTACHED... PLEASE MAKE SURE ELM327-DEVICE IS ATTACHED...")
+                    print("NO CORRECT OR ONLY GPS-USB ATTACHED...\nPLEASE MAKE SURE ELM327-DEVICE IS ATTACHED...")
                     self.__init__(self.portname, 1, 7)
                     return None
          print("atz response:" + self.ELMver)
@@ -124,16 +115,15 @@ class OBDPort:
             print("Reconnecting...")
             self.send_command("0100")
             ready = self.get_result()
-            
+            print(ready)
+
          print(ready)
          return None            
      def close(self):
          """ Resets device and closes all associated filehandles"""
-         
          if (self.port!= None) and self.State==1:
             self.send_command("atz")
             self.port.close()
-         
          self.port = None
          self.ELMver = "Unknown"
      def send_command(self, cmd):
@@ -144,65 +134,53 @@ class OBDPort:
              for c in cmd:
                  self.port.write(c)
              self.port.write("\r\n")
-             #debug_display(self._notify_window, 3, "Send command:" + cmd)
      def interpret_result(self,code):
          """Internal use only: not a public interface"""
          # Code will be the string returned from the device.
          # It should look something like this:
          # '41 11 0 0\r\r'
-         
          # 9 seems to be the length of the shortest valid response
          if len(code) < 7:
              #raise Exception("BogusCode")
              print ("Bad code")+code
-         
          # get the first thing returned, echo should be off
          code = string.split(code, "\r")
          code = code[0]
-         
-         #remove whitespace
+         # remove whitespace
          code = string.split(code)
          code = string.join(code, "")
-         
          #cables can behave differently 
          if code[:6] == "NODATA": # there is no such sensor
              return "NODATA"
-             
          # first 4 characters are code from ELM
          code = code[4:]
          return code
      def interpret_DTCresult(self,code):
          if len(code) < 7:
-             #raise Exception("BogusCode")
              print ("Bad code")+code
          
          # get the first thing returned, echo should be off
          code = string.split(code, "\r")
          code = code[0]
-         
          #remove whitespace
          code = string.split(code)
          code = string.join(code, "")
-         
          #cables can behave differently 
          if code[:6] == "NODATA": # there is no such sensor
              return "NODATA"
-             
          # first 4 characters are code from ELM
          code = code[2:]
          return code
+
      def nrOfDTC(self,code):
          if len(code) < 7:
              print ("Bad code" + str(code))
-         
          # get the first thing returned, echo should be off
          code = string.split(code, "\r")
          code = code[0]
-         
          #remove whitespace
          code = string.split(code)
          code = string.join(code, "")
-         
          #cables can behave differently 
          if code[:6] == "NODATA": # there is no such sensor
              return "NODATA"
@@ -211,6 +189,7 @@ class OBDPort:
          code = code[4:6]
          nr = int(code, 16) - 128
          return nr
+
      def get_result(self):
          """Internal use only: not a public interface"""
          #time.sleep(0.01)
