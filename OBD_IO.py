@@ -88,7 +88,7 @@ class OBDPort:
          self.ELMver = self.get_result()
          if(self.ELMver is None):
              print("- THIS IS NOT AN USB ELM-DEVICE - \nChanging port....")
-             if(self.port.name == "/dev/ttyUSB0"):
+             if(self.portname == "/dev/ttyUSB0"):
                 try:
                     print("Trying port ttyUSB1...")
                     self.port = serial.Serial("/dev/ttyUSB1",baud, \
@@ -98,7 +98,7 @@ class OBDPort:
                     print("NO OR ONLY GPS-USB ATTACHED... PLEASE ATTACH ELM327-DEVICE...")
                     self.__init__(self.portname, 1, 7)
                     return None
-             elif(self.port.name == "/dev/ttyUSB1"):
+             elif(self.portname == "/dev/ttyUSB1"):
                 try:
                     print("Trying port ttyUSB0")
                     self.port = serial.Serial("/dev/ttyUSB0",baud, \
@@ -206,9 +206,9 @@ class OBDPort:
              while 1:
                  if(counter == 50):
                      self.close()
-                     if(self.port.name == "/dev/ttyUSB0"):
+                     if(self.portname == "/dev/ttyUSB0"):
                          newPort = "/dev/ttyUSB1"
-                     elif(self.port.name == "/dev/ttyUSB1"):
+                     elif(self.portname == "/dev/ttyUSB1"):
                          newPort = "/dev/ttyUSB0"
                      self.__init__(newPort, 1, 7)
                      return None
