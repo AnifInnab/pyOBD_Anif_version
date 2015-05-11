@@ -61,7 +61,7 @@ class OBDPort:
          self.State = 1 #state SERIAL is 1 connected, 0 disconnected (connection failed)
          self.port = None
          self.portname = portnum
-         print("POOOOOOOOOOOOOOOOOORT :                  " + self.portname)
+         print("PORT :                  " + self.portname)
          print("Opening serial port...")
          try:
              self.port = serial.Serial(portnum,baud, \
@@ -71,7 +71,7 @@ class OBDPort:
              time.sleep(2)
              self.close()
              self.__init__(self.portname, 1, 7)
-             self.State = 0
+             #self.State = 0
              return None
          print("Interface successfully " + self.port.portstr + " opened")
 
@@ -80,7 +80,7 @@ class OBDPort:
             self.send_command("atz")   # initialize
             time.sleep(1)
          except serial.SerialException:
-            self.State = 0
+            #self.State = 0
             self.close()
             self.__init__(self.portname, 1, 7)
             return None
@@ -203,9 +203,11 @@ class OBDPort:
          if self.port is not None:
              buffer = ""
              while 1:
-                 if(counter == 40):
+                 if(counter == 50):
                      self.close()
                      self.__init__(self.portname, 1, 7)
+                     return None
+                     break;
                  c = self.port.read(1)
                  print("output: " + c)
                  #print("data output: " + c)
@@ -225,12 +227,12 @@ class OBDPort:
                      
                  if buffer != "" or c != ">": #if something is in buffer, add everything
                     buffer = buffer + c
-                    
+                 counter += 1
+
              if(buffer == ""):
                 print("buffer is empty")
                 return None
              return buffer
-             counter += 1
          else:
             print("PORT NOT CONNECTED...")
          return None
