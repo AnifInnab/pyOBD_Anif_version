@@ -200,12 +200,17 @@ class OBDPort:
          #time.sleep(0.01)
          repeat_count = 0
          counter = 0
+         newPort = ""
          if self.port is not None:
              buffer = ""
              while 1:
                  if(counter == 50):
                      self.close()
-                     self.__init__(self.portname, 1, 7)
+                     if(self.port.name == "/dev/ttyUSB0"):
+                         newPort = "/dev/ttyUSB1"
+                     elif(self.port.name == "/dev/ttyUSB1"):
+                         newPort = "/dev/ttyUSB0"
+                     self.__init__(newPort, 1, 7)
                      return None
                      break;
                  c = self.port.read(1)
