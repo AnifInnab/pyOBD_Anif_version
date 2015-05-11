@@ -211,7 +211,6 @@ class OBDPort:
                      elif(self.portname == "/dev/ttyUSB1"):
                          newPort = "/dev/ttyUSB0"
                      self.__init__(newPort, 1, 7)
-                     return None
                      break;
                  c = self.port.read(1)
                  print("output: " + c)
