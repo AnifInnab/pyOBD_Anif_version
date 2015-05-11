@@ -235,7 +235,6 @@ class OBDPort:
 
              if(buffer == ""):
                 print("buffer is empty")
-                return None
              return buffer
          else:
             print("PORT NOT CONNECTED...")
