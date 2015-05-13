@@ -129,10 +129,10 @@ class logger:
         coolTemp = self.obd.get_sensor_value(obd_sensors.SENSORS[5]) #coolant temprature update every 8s
         iatSensor = self.obd.get_sensor_value(obd_sensors.SENSORS[14]) #intake air temprature update every 5s
         while 1:
-            self.timeGone = int(((time.time())-startTime)) #Current time - starting time
+            #self.timeGone = int(((time.time())-startTime)) #Current time - starting time
             filename = "Session_" + str(self.sessionID) + "_" + str(semiSession) + ".txt"
             file = open(filename, "w")
-            if self.timeGone>temptime:  #If seconds changes
+            if 1:#self.timeGone>temptime:  #If seconds changes
                 self.writePidToFile("UID", self.UID)         #RASPBERRY SERIAL (UNIQE ID) CHANGE THIS LATER 
                 self.seq += "+\n"
                 self.writePidToFile("SID", str(self.sessionID))
@@ -151,8 +151,8 @@ class logger:
                     self.seq += "+\n"
 
                     while nrOfReq < 5:
-                        self.timeGone = int(((time.time())-startTime)) #Current time - starting time
-                        if self.timeGone>temptime:
+                        #self.timeGone = int(((time.time())-startTime)) #Current time - starting time
+                        if 1:#self.timeGone>temptime:
                             self.writePidToFile("TIME", self.timestamp(2))
                             #self.writePidToFile("GPS", "0.0-0.0") #SIM
                             self.writePidToFile("GPS", (str(self.session.fix.latitude) + "-" + str(self.session.fix.longitude)))
