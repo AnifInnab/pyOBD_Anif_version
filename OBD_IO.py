@@ -120,13 +120,16 @@ class OBDPort:
              self.__init__(self.portname, 1, 7)
          
          #was outcommented
-         while(str(ready[0]) != "4"):
-            print("Reconnecting...")
+         for i in range(10) and str(ready[0]) != "4":
+            print("Resending command 0100 \"Pids Supported\" ...")
             print("Read[0]: " + str(ready[0]))
             self.send_command("0100")
             ready = self.get_result()
             print(ready)
-         
+         if str(ready[0]) != "4":
+            self.close()
+            self.__init__(self.portname, 1, 7)
+            
          print(ready)
          return None            
      def close(self):
