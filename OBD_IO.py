@@ -121,7 +121,7 @@ class OBDPort:
          
          #was outcommented
          while(str(ready[0]) != "4"):
-            print("Bad read: " + str(ready))
+            print("Ready [0], Bad read: " + str(ready[0]))
             print("Resending command (0100) \"Pids Supported\" ...")
             self.send_command("0100")
             ready = self.get_result()
