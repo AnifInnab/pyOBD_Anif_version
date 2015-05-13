@@ -83,7 +83,7 @@ class OBDPort:
             #self.State = 0
             self.close()
             self.__init__(self.portname, 1, 7)
-            return None
+            #return None
 
          self.ELMver = self.get_result()
          if(self.ELMver is None):
@@ -94,7 +94,8 @@ class OBDPort:
                     self.port = serial.Serial("/dev/ttyUSB1",baud, \
                     parity = par, stopbits = sb, bytesize = databits,timeout = to)
                 except serial.SerialException:
-                    self.State = 0
+                    #self.State = 0
+                    self.close()
                     print("NO OR ONLY GPS-USB ATTACHED... PLEASE ATTACH ELM327-DEVICE...")
                     self.__init__(self.portname, 1, 7)
              elif(self.port.name == "/dev/ttyUSB1"):
@@ -103,7 +104,8 @@ class OBDPort:
                     self.port = serial.Serial("/dev/ttyUSB0",baud, \
                     parity = par, stopbits = sb, bytesize = databits,timeout = to)
                 except serial.SerialException:
-                    self.State = 0
+                    #self.State = 0
+                    self.close()
                     print("NO CORRECT OR ONLY GPS-USB ATTACHED...\nPLEASE MAKE SURE ELM327-DEVICE IS ATTACHED...")
                     self.__init__(self.portname, 1, 7)
          #print("atz response:" + self.ELMver)
@@ -114,15 +116,17 @@ class OBDPort:
          
          print("ready: " + str(ready))
          if(ready == None):
+             self.close()
              self.__init__(self.portname, 1, 7)
-         '''
+         
+         #was outcommented
          while(str(ready[0]) != "4"):
             print("Reconnecting...")
             print("Read[0]: " + str(ready[0]))
             self.send_command("0100")
             ready = self.get_result()
             print(ready)
-         '''
+         
          print(ready)
          return None            
      def close(self):

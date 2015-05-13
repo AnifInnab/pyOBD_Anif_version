@@ -28,7 +28,7 @@ class logger:
         elif(self.obd.getPortName() == "/dev/ttyUSB1"):
             os.system("sudo gpsd /dev/ttyUSB0 -F /var/run/gpsd.sock")
 
-        time.sleep(20) # LET GPS ESTABLISH FIX
+        time.sleep(10) # LET GPS ESTABLISH FIX
 
         # Listen on port 2947 (gpsd) of localhost
         self.session = gps.gps("localhost", "2947")
@@ -123,17 +123,8 @@ class logger:
         carSens = self.pidsSupported()  #GET SUPPORTED PIDS
         temptime = -1
 
-        #self.loadGPSFIX(self)
-        '''
-        for i in range (5):
-            report = self.session.next()
-            print (report)
-            if report['class'] == 'TPV':
-                if hasattr(report, 'time'):
-                    lon = ("longitude: " + str(report.lon))
-            self.session.fix.longitude
-            print("Setting up GPS...")        
-        '''
+        self.loadGPSFIX()
+
         startTime = time.time()
         coolTemp = self.obd.get_sensor_value(obd_sensors.SENSORS[5]) #coolant temprature update every 8s
         iatSensor = self.obd.get_sensor_value(obd_sensors.SENSORS[14]) #intake air temprature update every 5s
