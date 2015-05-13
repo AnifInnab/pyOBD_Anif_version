@@ -8,7 +8,7 @@ import datetime
 import threading
 import platform
 import serial
-#import gps
+import gps
 #import gpsdData
 #\\\\.\\CNCB0
 
@@ -16,10 +16,10 @@ import serial
 
 class logger:
     def __init__(self, sessionID, userID):
-        self.port = "\\\\.\\CNCB0" #"/dev/ttyUSB0" #self.scanSerial()
+        self.port = "/dev/ttyUSB0" #"/dev/ttyUSB0" #self.scanSerial()
         self.obd = OBD_IO.OBDPort(self.port, 1, 7)
 
-        '''
+        
         print("Restarting GPS...")
         os.system("sudo killall gpsd")
         print("OBD PORT: " + self.obd.getPortName())
@@ -33,7 +33,7 @@ class logger:
         # Listen on port 2947 (gpsd) of localhost
         self.session = gps.gps("localhost", "2947")
         self.session.stream(gps.WATCH_ENABLE | gps.WATCH_NEWSTYLE)
-        '''
+        
         self.UID = userID
         self.sessionID = sessionID + 1
         self.nrOfResponses = 0
@@ -163,9 +163,9 @@ class logger:
                         self.timeGone = int(((time.time())-startTime)) #Current time - starting time
                         if self.timeGone>temptime:
                             self.writePidToFile("TIME", self.timestamp(2))
-                            self.writePidToFile("GPS", "0.0-0.0")
-                            #self.writePidToFile("GPS", (str(self.session.fix.latitude) + "-" + str(self.session.fix.longitude)))
-                            #self.session.next()
+                            #self.writePidToFile("GPS", "0.0-0.0") #SIM
+                            self.writePidToFile("GPS", (str(self.session.fix.latitude) + "-" + str(self.session.fix.longitude)))
+                            self.session.next()
 
                             ## MOST IMPORTANT PIDS (RPM, SPEED, MAF, IAT) ##
                             sensorvalue = self.obd.get_sensor_value(obd_sensors.SENSORS[12]) #rpm
@@ -198,8 +198,8 @@ class logger:
                 file.flush()
                 self.seq = ""
                 file.close()
-                #shutil.move("/home/pi/pyOBD_Anif_version/" + filename, "/home/pi/pyOBD_Anif_version/logFiles/" + filename )
-                shutil.move("C:/Users/Snif/Documents/Visual Studio 2013/Projects/pyOBD_Anif_version/pyOBD_Anif_version/" + filename, "C:/Users/Snif/Documents/Visual Studio 2013/Projects/pyOBD_Anif_version/pyOBD_Anif_version/logFiles/" + filename )
+                shutil.move("/home/pi/pyOBD_Anif_version/" + filename, "/home/pi/pyOBD_Anif_version/logFiles/" + filename )
+                #shutil.move("C:/Users/Snif/Documents/Visual Studio 2013/Projects/pyOBD_Anif_version/pyOBD_Anif_version/" + filename, "C:/Users/Snif/Documents/Visual Studio 2013/Projects/pyOBD_Anif_version/pyOBD_Anif_version/logFiles/" + filename )
                 
                 self.nrOfResponses += 1
                 fiveSec += 1
