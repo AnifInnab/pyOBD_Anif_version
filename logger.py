@@ -16,7 +16,7 @@ import gps
 
 class logger:
     def __init__(self, sessionID, userID):
-        self.port = "/dev/ttyUSB0" #self.scanSerial() "/dev/pts/2" #
+        self.port = "/dev/pts/0"#"/dev/ttyUSB0" #self.scanSerial() "/dev/pts/2" #
         self.obd = OBD_IO.OBDPort(self.port, 1, 7)
 
         
@@ -25,7 +25,7 @@ class logger:
         print("OBD PORT: " + self.obd.getPortName())
         if(self.obd.getPortName() == "/dev/ttyUSB0"):
             os.system("sudo gpsd /dev/ttyUSB1 -F /var/run/gpsd.sock")
-        elif(self.obd.getPortName() == "/dev/ttyUSB1"):
+        else:
             os.system("sudo gpsd /dev/ttyUSB0 -F /var/run/gpsd.sock")
 
         time.sleep(5) # LET GPS ESTABLISH FIX
@@ -37,7 +37,7 @@ class logger:
             os.system("sudo killall gpsd")
             if(self.obd.getPortName() == "/dev/ttyUSB0"):
                 os.system("sudo gpsd /dev/ttyUSB1 -F /var/run/gpsd.sock")
-            elif(self.obd.getPortName() == "/dev/pts/2"):
+            else:
                 os.system("sudo gpsd /dev/ttyUSB0 -F /var/run/gpsd.sock")
             self.session = gps.gps("localhost", "2947")
         self.session.stream(gps.WATCH_ENABLE | gps.WATCH_NEWSTYLE)
