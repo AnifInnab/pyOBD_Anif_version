@@ -19,20 +19,26 @@ class logger:
         self.port = "/dev/pts/2" #"/dev/ttyUSB0" #self.scanSerial()
         self.obd = OBD_IO.OBDPort(self.port, 1, 7)
 
+        
+        print("Restarting GPS...")
+        os.system("sudo killall gpsd")
         print("OBD PORT: " + self.obd.getPortName())
         if(self.obd.getPortName() == "/dev/ttyUSB0"):
-            print("Restarting GPS...")
-            os.system("sudo killall gpsd")
             os.system("sudo gpsd /dev/ttyUSB1 -F /var/run/gpsd.sock")
         elif(self.obd.getPortName() == "/dev/pts/2"):
-            print("Restarting GPS...")
-            os.system("sudo killall gpsd")
             os.system("sudo gpsd /dev/ttyUSB0 -F /var/run/gpsd.sock")
 
-        time.sleep(10) # LET GPS ESTABLISH FIX
+        time.sleep(5) # LET GPS ESTABLISH FIX
 
         # Listen on port 2947 (gpsd) of localhost
-        self.session = gps.gps("localhost", "2947")
+        try:
+            self.session = gps.gps("localhost", "2947")
+        except:
+            os.system("sudo killall gpsd")
+            if(self.obd.getPortName() == "/dev/ttyUSB0"):
+                os.system("sudo gpsd /dev/ttyUSB1 -F /var/run/gpsd.sock")
+            elif(self.obd.getPortName() == "/dev/pts/2"):
+                os.system("sudo gpsd /dev/ttyUSB0 -F /var/run/gpsd.sock")
         self.session.stream(gps.WATCH_ENABLE | gps.WATCH_NEWSTYLE)
         
         self.UID = userID
@@ -102,7 +108,7 @@ class logger:
             file.write(self.seq + "-\n")
             time.sleep(5)
     def loadGPSFIX(self):
-        for i in range (5):
+        for i in range (3):
             report = self.session.next()
             print (report)
             if report['class'] == 'TPV':
