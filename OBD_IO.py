@@ -108,7 +108,7 @@ class OBDPort:
                     self.close()
                     print("NO CORRECT OR ONLY GPS-USB ATTACHED...\nPLEASE MAKE SURE ELM327-DEVICE IS ATTACHED...")
                     self.__init__(self.portname, 1, 7)
-         #print("atz response:" + self.ELMver)
+         print("atz response:" + str(self.ELMver))
          self.send_command("ate0")  # echo off
          print("ate0 response:" + self.get_result())
          self.send_command("0100")
@@ -179,7 +179,6 @@ class OBDPort:
          # first 4 characters are code from ELM
          code = code[2:]
          return code
-
      def nrOfDTC(self,code):
          if len(code) < 7:
              print ("Bad code" + str(code))
@@ -197,7 +196,6 @@ class OBDPort:
          code = code[4:6]
          nr = int(code, 16) - 128
          return nr
-
      def get_result(self):
          """Internal use only: not a public interface"""
          #time.sleep(0.01)
@@ -213,6 +211,7 @@ class OBDPort:
                          newPort = "/dev/ttyUSB1"
                      elif(self.portname == "/dev/ttyUSB1"):
                          newPort = "/dev/ttyUSB0"
+                     self.close()
                      self.__init__(newPort, 1, 7)
                      break;
                  c = self.port.read(1)
@@ -220,6 +219,7 @@ class OBDPort:
                  #print("data output: " + c)
                  if len(c) == 0:
                     if(repeat_count == 10):
+                        self.close()
                         self.__init__("/dev/ttyUSB0", 1, 7)
                         break
                     print ("NO DATA RECIEVED!\n")
@@ -264,14 +264,12 @@ class OBDPort:
          sensor = obd_sensors.SENSORS[sensor_index]
          r = self.get_sensor_value(sensor)
          return (sensor.name,r, sensor.unit)
-
      def sensor_names(self):
          """Internal use only: not a public interface"""
          names = []
          for s in obd_sensors.SENSORS:
              names.append(s.name)
-         return names
-                 
+         return names              
      def getPortName(self):
          portname = self.port.portstr
          return portname

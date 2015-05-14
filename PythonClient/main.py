@@ -19,8 +19,8 @@ l          = ''
 while 1:
 
     # Get the files in the directory "logs"
-    mypath = 'C:/Users/Snif/Documents/Visual Studio 2013/Projects/pyOBD_Anif_version/pyOBD_Anif_version/logFiles'
-    #mypath = '/home/pi/pyOBD_Anif_version/logFiles'
+    #mypath = 'C:/Users/Snif/Documents/Visual Studio 2013/Projects/pyOBD_Anif_version/pyOBD_Anif_version/logFiles'
+    mypath = '/home/pi/pyOBD_Anif_version/logFiles'
     #mypath = '/home/jonas/Work/PythonServer_2.0/project-client/logs'
     onlyfiles = [ f for f in listdir(mypath) if isfile(join(mypath,f)) ]
 

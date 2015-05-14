@@ -16,7 +16,7 @@ import gps
 
 class logger:
     def __init__(self, sessionID, userID):
-        self.port = "/dev/pts/2" #"/dev/ttyUSB0" #self.scanSerial()
+        self.port = "/dev/ttyUSB0" #self.scanSerial() "/dev/pts/2" #
         self.obd = OBD_IO.OBDPort(self.port, 1, 7)
 
         
@@ -25,7 +25,7 @@ class logger:
         print("OBD PORT: " + self.obd.getPortName())
         if(self.obd.getPortName() == "/dev/ttyUSB0"):
             os.system("sudo gpsd /dev/ttyUSB1 -F /var/run/gpsd.sock")
-        elif(self.obd.getPortName() == "/dev/pts/2"):
+        elif(self.obd.getPortName() == "/dev/ttyUSB1"):
             os.system("sudo gpsd /dev/ttyUSB0 -F /var/run/gpsd.sock")
 
         time.sleep(5) # LET GPS ESTABLISH FIX
@@ -39,6 +39,7 @@ class logger:
                 os.system("sudo gpsd /dev/ttyUSB1 -F /var/run/gpsd.sock")
             elif(self.obd.getPortName() == "/dev/pts/2"):
                 os.system("sudo gpsd /dev/ttyUSB0 -F /var/run/gpsd.sock")
+            self.session = gps.gps("localhost", "2947")
         self.session.stream(gps.WATCH_ENABLE | gps.WATCH_NEWSTYLE)
         
         self.UID = userID
@@ -108,7 +109,7 @@ class logger:
             file.write(self.seq + "-\n")
             time.sleep(5)
     def loadGPSFIX(self):
-        for i in range (3):
+        for i in range (5):
             report = self.session.next()
             print (report)
             if report['class'] == 'TPV':
@@ -160,7 +161,7 @@ class logger:
                         if 1:#self.timeGone>temptime:
                             self.writePidToFile("TIME", self.timestamp(2))
                             #self.writePidToFile("GPS", "0.0-0.0") #SIM
-                            self.writePidToFile("GPS", (str(self.session.fix.latitude) + "-" + str(self.session.fix.longitude)))
+                            self.writePidToFile("GPS", (str(self.session.fix.longitude) + "-" + str(self.session.fix.latitude)))
                             self.session.next()
 
                             ## MOST IMPORTANT PIDS (RPM, SPEED, MAF, IAT) ##
