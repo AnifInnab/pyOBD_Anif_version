@@ -19,13 +19,14 @@ class logger:
         self.port = "/dev/pts/2" #"/dev/ttyUSB0" #self.scanSerial()
         self.obd = OBD_IO.OBDPort(self.port, 1, 7)
 
-        
-        print("Restarting GPS...")
-        os.system("sudo killall gpsd")
         print("OBD PORT: " + self.obd.getPortName())
         if(self.obd.getPortName() == "/dev/ttyUSB0"):
+            print("Restarting GPS...")
+            os.system("sudo killall gpsd")
             os.system("sudo gpsd /dev/ttyUSB1 -F /var/run/gpsd.sock")
         elif(self.obd.getPortName() == "/dev/pts/2"):
+            print("Restarting GPS...")
+            os.system("sudo killall gpsd")
             os.system("sudo gpsd /dev/ttyUSB0 -F /var/run/gpsd.sock")
 
         time.sleep(10) # LET GPS ESTABLISH FIX
@@ -109,8 +110,6 @@ class logger:
                     lon = ("longitude: " + str(report.lon))
             self.session.fix.longitude
             print("Setting up GPS...")
-            os.system("clear")
-
     def startLogging(self):
         nineSec = 0
         fiveSec = 0

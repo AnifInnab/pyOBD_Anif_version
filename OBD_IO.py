@@ -125,8 +125,7 @@ class OBDPort:
             print("Resending command (0100) \"Pids Supported\" ...")
             self.send_command("0100")
             ready = self.get_result()
-         
-         print(ready)
+            print(ready)
          return None            
      def close(self):
          """ Resets device and closes all associated filehandles"""
