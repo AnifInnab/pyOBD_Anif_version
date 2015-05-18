@@ -18,7 +18,7 @@ class logger:
     def __init__(self, sessionID, userID):
         time.sleep(5) #LET SLEEP
         self.port = "/dev/ttyUSB0" #self.scanSerial() "/dev/pts/2" #
-        self.obd = OBD_IO.OBDPort(self.port, 1, 7)
+        self.obd = OBD_IO.OBDPort(self.port, 1, 5)
 
         
         print("Restarting GPS...")
