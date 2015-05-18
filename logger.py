@@ -160,8 +160,8 @@ class logger:
                 self.seq += "+\n"
 
                 while nrOfReq < 20:
-                    self.timeGone = int(((time.time())-startTime)) #Current time - starting time
-                if self.timeGone>temptime:
+                #    self.timeGone = int(((time.time())-startTime)) #Current time - starting time
+                #if self.timeGone>temptime:
                     self.writePidToFile("TIME", self.timestamp(2))
                     #self.writePidToFile("GPS", "0.0-0.0") #SIM
                     self.writePidToFile("GPS", (str(self.session.fix.latitude) + "-" + str(self.session.fix.longitude)))
