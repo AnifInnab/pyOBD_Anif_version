@@ -61,6 +61,7 @@ class OBDPort:
          self.State = 1 #state SERIAL is 1 connected, 0 disconnected (connection failed)
          self.port = None
          self.portname = portnum
+         self.faultCounter = 0
          print("PORT :                  " + self.portname)
          print("Opening serial port...")
          try:
@@ -125,6 +126,9 @@ class OBDPort:
              ready = "EMPTY BUFFERT"
 
          while(str(ready[0]) != "4"):
+            if self.faultCounter == 20:
+                self.close()
+                self.__init__(self.portname, 1, 7)
             print("Ready[0], Bad read: " + str(ready[0]))
             if(str(ready[0]) == "S"):
                 print("PLEASE RECONNECT ELM327-DEVICE")
@@ -133,6 +137,7 @@ class OBDPort:
             self.send_command("0100")
             ready = self.get_result()
             print(ready)
+            self.faultCounter += 1
          return None            
      def close(self):
          """ Resets device and closes all associated filehandles"""
@@ -221,12 +226,12 @@ class OBDPort:
                      self.__init__(newPort, 1, 7)
                      return "0--"
                      break;
-                 #try:
-                 c = self.port.read(1)
-                 #except:
-                  #  self.close()
-                   # print("Reading problems...")
-                    #self.__init__(self.portname, 1, 7)
+                 try:
+                    c = self.port.read(1)
+                 except:
+                    self.close()
+                    print("Reading problems...")
+                    self.__init__(self.portname, 1, 7)
                  #print("output: " + c)
                  #print("data output: " + c)
                  if len(c) == 0:
