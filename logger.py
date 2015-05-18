@@ -17,7 +17,7 @@ import gps
 class logger:
     def __init__(self, sessionID, userID):
         time.sleep(30) #LET SLEEP
-        self.port = "/dev/pts/0"#"/dev/ttyUSB0" #self.scanSerial() "/dev/pts/2" #
+        self.port = "/dev/ttyUSB0" #self.scanSerial() "/dev/pts/2" #
         self.obd = OBD_IO.OBDPort(self.port, 1, 7)
 
         
