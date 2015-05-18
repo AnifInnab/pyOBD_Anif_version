@@ -69,9 +69,9 @@ class OBDPort:
          except serial.SerialException as e:
              print (e)
              time.sleep(2)
+             self.State = 0
              self.close()
              self.__init__(self.portname, 1, 7)
-             #self.State = 0
              return None
          print("Interface successfully " + self.port.portstr + " opened")
 
@@ -80,10 +80,11 @@ class OBDPort:
             self.send_command("atz")   # initialize
             time.sleep(1)
          except serial.SerialException:
-            #self.State = 0
+            time.sleep(2)
+            self.State = 0
             self.close()
             self.__init__(self.portname, 1, 7)
-            #return None
+            return None
 
          self.ELMver = self.get_result()
          if(self.ELMver is None):
@@ -110,7 +111,7 @@ class OBDPort:
                     self.__init__(self.portname, 1, 7)
          print("atz response:" + str(self.ELMver))
          self.send_command("ate0")  # echo off
-         print("ate0 response:" + self.get_result())
+         print("ate0 response:" + str(self.get_result()))
          self.send_command("0100")
          ready = self.get_result()
          
@@ -153,7 +154,7 @@ class OBDPort:
          # 9 seems to be the length of the shortest valid response
          if len(code) < 7:
              #raise Exception("BogusCode")
-             print ("Bad code")+code
+             print ("Bad code: " + str(code))
          # get the first thing returned, echo should be off
          code = string.split(code, "\r")
          code = code[0]
@@ -169,7 +170,6 @@ class OBDPort:
      def interpret_DTCresult(self,code):
          if len(code) < 7:
              print ("Bad code")+code
-         
          # get the first thing returned, echo should be off
          code = string.split(code, "\r")
          code = code[0]
@@ -209,13 +209,13 @@ class OBDPort:
              buffer = ""
              while 1:
                  if(counter == 50):
-                     self.close()
                      if(self.portname == "/dev/ttyUSB0"):
                          newPort = "/dev/ttyUSB1"
                      elif(self.portname == "/dev/ttyUSB1"):
                          newPort = "/dev/ttyUSB0"
                      self.close()
                      self.__init__(newPort, 1, 7)
+                     return None
                      break;
                  c = self.port.read(1)
                  #print("output: " + c)
@@ -224,6 +224,7 @@ class OBDPort:
                     if(repeat_count == 10):
                         self.close()
                         self.__init__("/dev/ttyUSB0", 1, 7)
+                        return None
                         break
                     print ("NO DATA RECIEVED!\n")
                     repeat_count = repeat_count + 1
@@ -244,7 +245,7 @@ class OBDPort:
              return buffer
          else:
             print("PORT NOT CONNECTED...")
-         return ""
+         return None
      # get sensor value from command
      def get_sensor_value(self,sensor):
          """Internal use only: not a public interface"""

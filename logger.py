@@ -16,6 +16,7 @@ import gps
 
 class logger:
     def __init__(self, sessionID, userID):
+        time.sleep(30) #LET SLEEP
         self.port = "/dev/pts/0"#"/dev/ttyUSB0" #self.scanSerial() "/dev/pts/2" #
         self.obd = OBD_IO.OBDPort(self.port, 1, 7)
 
@@ -161,7 +162,7 @@ class logger:
                         if 1:#self.timeGone>temptime:
                             self.writePidToFile("TIME", self.timestamp(2))
                             #self.writePidToFile("GPS", "0.0-0.0") #SIM
-                            self.writePidToFile("GPS", (str(self.session.fix.longitude) + "-" + str(self.session.fix.latitude)))
+                            self.writePidToFile("GPS", (str(self.session.fix.latitude) + "-" + str(self.session.fix.longitude)))
                             self.session.next()
 
                             ## MOST IMPORTANT PIDS (RPM, SPEED, MAF, IAT) ##
