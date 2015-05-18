@@ -177,6 +177,7 @@ class logger:
                             sensorvalue = self.obd.get_sensor_value(obd_sensors.SENSORS[16]) #maf
                             self.writePidToFile("0110", str(sensorvalue))
                             curMAF = sensorvalue
+                        '''
                         if nineSec == 900000000000:
                                 iatSensor = self.obd.get_sensor_value(obd_sensors.SENSORS[14]) #intake air temprature update every 5s
                         if(carSens[13] == "1"):
@@ -186,7 +187,8 @@ class logger:
                                 coolTemp = self.obd.get_sensor_value(obd_sensors.SENSORS[5]) #coolant temprature update every 8s
                                 fiveSec = 0
                         if(carSens[4] == "1"):
-                                self.writePidToFile("0105", str(coolTemp))             
+                                self.writePidToFile("0105", str(coolTemp))
+                        '''             
                         self.seq += "+\n"
                         nrOfReq += 1
                         temptime = self.timeGone

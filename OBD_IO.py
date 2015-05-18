@@ -207,6 +207,7 @@ class OBDPort:
          #time.sleep(0.01)
          repeat_count = 0
          counter = 0
+         c = "" # new
          newPort = ""
          if self.port is not None:
              buffer = ""
@@ -220,12 +221,12 @@ class OBDPort:
                      self.__init__(newPort, 1, 7)
                      return "0--"
                      break;
-                 try:
-                     c = self.port.read(1)
-                 except:
-                    self.close()
-                    print("Reading problems...")
-                    self.__init__(self.portname, 1, 7)
+                 #try:
+                 c = self.port.read(1)
+                 #except:
+                  #  self.close()
+                   # print("Reading problems...")
+                    #self.__init__(self.portname, 1, 7)
                  #print("output: " + c)
                  #print("data output: " + c)
                  if len(c) == 0:
