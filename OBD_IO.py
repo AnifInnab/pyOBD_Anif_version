@@ -220,7 +220,12 @@ class OBDPort:
                      self.__init__(newPort, 1, 7)
                      return "0--"
                      break;
-                 c = self.port.read(1)
+                 try:
+                     c = self.port.read(1)
+                 except:
+                    self.close()
+                    print("Reading problems...")
+                    self.__init__(self.portname, 1, 7)
                  #print("output: " + c)
                  #print("data output: " + c)
                  if len(c) == 0:

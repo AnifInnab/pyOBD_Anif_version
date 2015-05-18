@@ -3,10 +3,13 @@
 import client
 import sys
 import time
+import os
 from os import listdir
 from os import remove
 from os.path import isfile, join
-time.sleep(20)
+time.sleep(7)
+os.system("sudo dhclient usb0")
+time.sleep(4)
 # Server ip
 tcp_ip     = '91.123.200.131'
 # Dev ip
@@ -15,9 +18,6 @@ tcp_port   = 5005
 buffersize = 4096
 verbose    = True
 l          = ''
-
-os.system("sudo dhclient usb0")
-time.sleep(5)
 
 while 1:
 
