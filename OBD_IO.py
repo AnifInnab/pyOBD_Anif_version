@@ -215,7 +215,7 @@ class OBDPort:
                          newPort = "/dev/ttyUSB0"
                      self.close()
                      self.__init__(newPort, 1, 7)
-                     return None
+                     return "0--"
                      break;
                  c = self.port.read(1)
                  #print("output: " + c)
@@ -224,7 +224,7 @@ class OBDPort:
                     if(repeat_count == 10):
                         self.close()
                         self.__init__("/dev/ttyUSB0", 1, 7)
-                        return None
+                        return "1--"
                         break
                     print ("NO DATA RECIEVED!\n")
                     repeat_count = repeat_count + 1
@@ -245,7 +245,7 @@ class OBDPort:
              return buffer
          else:
             print("PORT NOT CONNECTED...")
-         return None
+         return "2--"
      # get sensor value from command
      def get_sensor_value(self,sensor):
          """Internal use only: not a public interface"""
