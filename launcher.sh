@@ -4,5 +4,5 @@
 
 cd /
 cd home/pi/pyOBD_Anif_version
-sudo python module2.py & main.py
+sudo python module2.py & python main.py
 cd /

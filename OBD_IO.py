@@ -121,6 +121,9 @@ class OBDPort:
              self.__init__(self.portname, 1, 7)
          
          #was outcommented
+         if (str(ready) == ""):
+             ready = "EMPTY BUFFERT"
+
          while(str(ready[0]) != "4"):
             print("Ready[0], Bad read: " + str(ready[0]))
             if(str(ready[0]) == "S"):
