@@ -62,14 +62,25 @@ while 1:
                 for line in f.read().strip().split('+'):
                     # UID - ID code of raspberry
                     if count == 0:
-                        line = line.strip().split(']')[0]
+                        try:
+                            line = line.strip().split(']')[0]
+                        except:
+                            os.system("rm -rf " + mypath + "/" +currentfile)
+                            connection.close()
+                            connection = client.Client('91.123.200.131', 5005, 4096)
                         line = line.strip().split('[')[1]
                         line = line.strip().split(',')[1]
                         formattedData.update({'UID':line})
                         print "UID:%s" % (formattedData['UID'])
                     # Session - ID code of the drivesession
                     elif count == 1:
-                        line = line.strip().split(']')[0]
+                        try:
+                            line = line.strip().split(']')[0]
+                        except:
+                            os.system("rm -rf " + mypath + "/" +currentfile)
+                            connection.close()
+                            connection = client.Client('91.123.200.131', 5005, 4096)
+
                         line = line.strip().split('[')[1]
                         line = line.strip().split(',')[1]
                         formattedData.update({'SESSION':line})
