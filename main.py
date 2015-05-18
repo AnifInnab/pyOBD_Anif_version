@@ -35,6 +35,9 @@ while 1:
             try:
                 connection.connect()
             except:
+                time.sleep(3)
+                os.system("sudo dhclient usb0")
+                time.sleep(3)
                 if verbose:
                     e = sys.exc_info()[0]
                     print 'Error: %s' % (e)
