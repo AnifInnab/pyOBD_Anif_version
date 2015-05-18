@@ -16,7 +16,7 @@ import gps
 
 class logger:
     def __init__(self, sessionID, userID):
-        time.sleep(30) #LET SLEEP
+        time.sleep(13) #LET SLEEP
         self.port = "/dev/ttyUSB0" #self.scanSerial() "/dev/pts/2" #
         self.obd = OBD_IO.OBDPort(self.port, 1, 7)
 
@@ -144,10 +144,11 @@ class logger:
                 self.seq += "+\n"
                 self.writePidToFile("SID", str(self.sessionID))
                 self.seq += "+\n"
+
                 self.obd.send_command("0101")
                 nrOfDTC = self.obd.nrOfDTC(self.obd.get_result())
                 print(nrOfDTC)
-
+                '''
                 if nrOfDTC != "NODATA":
                     self.obd.send_command("03")
                     dtc = self.obd.interpret_DTCresult( self.obd.get_result() )
@@ -155,39 +156,40 @@ class logger:
                     for i in range (int(nrOfDTC)):
                         print("Engine DTC errorcode: " + dtcCodes[i] )
                         self.writePidToFile("ERROR", dtcCodes[i])
-                    self.seq += "+\n"
+                '''
+                self.seq += "+\n"
 
-                    while nrOfReq < 5:
-                        #self.timeGone = int(((time.time())-startTime)) #Current time - starting time
-                        if 1:#self.timeGone>temptime:
-                            self.writePidToFile("TIME", self.timestamp(2))
-                            #self.writePidToFile("GPS", "0.0-0.0") #SIM
-                            self.writePidToFile("GPS", (str(self.session.fix.latitude) + "-" + str(self.session.fix.longitude)))
-                            self.session.next()
+                while nrOfReq < 5:
+                    #self.timeGone = int(((time.time())-startTime)) #Current time - starting time
+                    if 1:#self.timeGone>temptime:
+                        self.writePidToFile("TIME", self.timestamp(2))
+                        #self.writePidToFile("GPS", "0.0-0.0") #SIM
+                        self.writePidToFile("GPS", (str(self.session.fix.latitude) + "-" + str(self.session.fix.longitude)))
+                        self.session.next()
 
-                            ## MOST IMPORTANT PIDS (RPM, SPEED, MAF, IAT) ##
-                            sensorvalue = self.obd.get_sensor_value(obd_sensors.SENSORS[12]) #rpm
-                            self.writePidToFile("010C", str(sensorvalue))
-                            sensorvalue = self.obd.get_sensor_value(obd_sensors.SENSORS[13]) #speed
-                            self.writePidToFile("010D", str(sensorvalue))
-                            ## MAF - NOT ALL VECHICLE SUPPORT    -  GET SUPPORT FOR NON-MAF VECHICLES  -  IMAP = RPM * MAP / IAT  -  MAF = (IMAP/120)*(VE/100)*(ED)*(MM)/(R)
-                            if(carSens[15] == "1"):
-                                sensorvalue = self.obd.get_sensor_value(obd_sensors.SENSORS[16]) #maf
-                                self.writePidToFile("0110", str(sensorvalue))
-                                curMAF = sensorvalue
-                            if nineSec == 9:
-                                    iatSensor = self.obd.get_sensor_value(obd_sensors.SENSORS[14]) #intake air temprature update every 5s
-                            if(carSens[13] == "1"):
-                                    self.writePidToFile("010F", str(iatSensor))
-                                    nineSec = 0
-                            if fiveSec == 5:
-                                    coolTemp = self.obd.get_sensor_value(obd_sensors.SENSORS[5]) #coolant temprature update every 8s
-                                    fiveSec = 0
-                            if(carSens[4] == "1"):
-                                    self.writePidToFile("0105", str(coolTemp))             
-                            self.seq += "+\n"
-                            nrOfReq += 1
-                            temptime = self.timeGone
+                        ## MOST IMPORTANT PIDS (RPM, SPEED, MAF, IAT) ##
+                        sensorvalue = self.obd.get_sensor_value(obd_sensors.SENSORS[12]) #rpm
+                        self.writePidToFile("010C", str(sensorvalue))
+                        sensorvalue = self.obd.get_sensor_value(obd_sensors.SENSORS[13]) #speed
+                        self.writePidToFile("010D", str(sensorvalue))
+                        ## MAF - NOT ALL VECHICLE SUPPORT    -  GET SUPPORT FOR NON-MAF VECHICLES  -  IMAP = RPM * MAP / IAT  -  MAF = (IMAP/120)*(VE/100)*(ED)*(MM)/(R)
+                        if(carSens[15] == "1"):
+                            sensorvalue = self.obd.get_sensor_value(obd_sensors.SENSORS[16]) #maf
+                            self.writePidToFile("0110", str(sensorvalue))
+                            curMAF = sensorvalue
+                        if nineSec == 9:
+                                iatSensor = self.obd.get_sensor_value(obd_sensors.SENSORS[14]) #intake air temprature update every 5s
+                        if(carSens[13] == "1"):
+                                self.writePidToFile("010F", str(iatSensor))
+                                nineSec = 0
+                        if fiveSec == 5:
+                                coolTemp = self.obd.get_sensor_value(obd_sensors.SENSORS[5]) #coolant temprature update every 8s
+                                fiveSec = 0
+                        if(carSens[4] == "1"):
+                                self.writePidToFile("0105", str(coolTemp))             
+                        self.seq += "+\n"
+                        nrOfReq += 1
+                        temptime = self.timeGone
                 nrOfReq = 0
                 print(self.seq)
                 temptime = self.timeGone
