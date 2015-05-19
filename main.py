@@ -56,101 +56,94 @@ while 1:
             dataEntries = []
 
              # Files is saved and can now be read
-            with open(mypath+"/"+currentfile, 'r') as f:
+            if os.path.getsize(mypath+"/"+currentfile) > 10:
+                with open(mypath+"/"+currentfile, 'r') as f:
 
-                count = 0
-                for line in f.read().strip().split('+'):
-                    # UID - ID code of raspberry
-                    if count == 0:
-                        try:
+                    count = 0
+                    for line in f.read().strip().split('+'):
+                        # UID - ID code of raspberry
+                        if count == 0:
                             line = line.strip().split(']')[0]
-                        except:
-                            os.system("rm -rf " + mypath + "/" +currentfile)
-                            connection.close()
-                            connection = client.Client('91.123.200.131', 5005, 4096)
-                        line = line.strip().split('[')[1]
-                        line = line.strip().split(',')[1]
-                        formattedData.update({'UID':line})
-                        print "UID:%s" % (formattedData['UID'])
-                    # Session - ID code of the drivesession
-                    elif count == 1:
-                        try:
+                            line = line.strip().split('[')[1]
+                            line = line.strip().split(',')[1]
+                            formattedData.update({'UID':line})
+                            print "UID:%s" % (formattedData['UID'])
+                        # Session - ID code of the drivesession
+                        elif count == 1:
+                      
                             line = line.strip().split(']')[0]
-                        except:
-                            os.system("rm -rf " + mypath + "/" +currentfile)
-                            connection.close()
-                            connection = client.Client('91.123.200.131', 5005, 4096)
+                
 
-                        line = line.strip().split('[')[1]
-                        line = line.strip().split(',')[1]
-                        formattedData.update({'SESSION':line})
-                        print "Session:%s" % (formattedData['SESSION'])
-                    # Errors - Stored error-codes
-                    elif count == 2:
-                        errors = [];
-                        multipleLines = line.strip().split(']')
-                        multipleLines = multipleLines[0:len(multipleLines)-1]
-                        for item in multipleLines:
-                            item = item.strip().split('[')[1]
-                            item = item.strip().split(',')[1]
-                            errors.append(item)
-                            print "Error:%s" % (item)
-                        formattedData.update({'Errors':errors})
-                    # Data entries
-                    else:
-                        valueHolder = []
-                        line = line.strip()
-                        if len(line) > 0:
-                            line = line.strip().split(']')
-                            for key in range(0, len(line)-1):
-                                tempValue = line[key].strip().split('[')[1]
-                                valueHolder.append(tempValue.strip().split(','))
-                            dataEntries.append(valueHolder)
-                    count += 1
+                            line = line.strip().split('[')[1]
+                            line = line.strip().split(',')[1]
+                            formattedData.update({'SESSION':line})
+                            print "Session:%s" % (formattedData['SESSION'])
+                        # Errors - Stored error-codes
+                        elif count == 2:
+                            errors = [];
+                            multipleLines = line.strip().split(']')
+                            multipleLines = multipleLines[0:len(multipleLines)-1]
+                            for item in multipleLines:
+                                item = item.strip().split('[')[1]
+                                item = item.strip().split(',')[1]
+                                errors.append(item)
+                                print "Error:%s" % (item)
+                            formattedData.update({'Errors':errors})
+                        # Data entries
+                        else:
+                            valueHolder = []
+                            line = line.strip()
+                            if len(line) > 0:
+                                line = line.strip().split(']')
+                                for key in range(0, len(line)-1):
+                                    tempValue = line[key].strip().split('[')[1]
+                                    valueHolder.append(tempValue.strip().split(','))
+                                dataEntries.append(valueHolder)
+                        count += 1
 
-                UID     = formattedData['UID']
-                session = formattedData['SESSION']
+                    UID     = formattedData['UID']
+                    session = formattedData['SESSION']
 
-                # Turn dataEntries into sql to send
-                for lines in dataEntries:
-                    datetime = lines[0][1]
-                    gps = [lines[1][1].strip().split('-')[0],lines[1][1].strip().split('-')[1]]
+                    # Turn dataEntries into sql to send
+                    for lines in dataEntries:
+                        datetime = lines[0][1]
+                        gps = [lines[1][1].strip().split('-')[0],lines[1][1].strip().split('-')[1]]
 
-                    # If there's no gps-data we do not send them
-                    if(gps[0] != "nan" and gps[1] != "nan"):
-                        sql = "CALL AddGPS('%s',%s,%s,%s,'%s')" \
-                         % (UID,session,gps[0],gps[1],datetime)
+                        # If there's no gps-data we do not send them
+                        if(gps[0] != "nan" and gps[1] != "nan"):
+                            sql = "CALL AddGPS('%s',%s,%s,%s,'%s')" \
+                             % (UID,session,gps[0],gps[1],datetime)
 
-                        print "Sending..."
-                        connection.send(sql)
-                        connection.recieve()
+                            print "Sending..."
+                            connection.send(sql)
+                            connection.recieve()
 
-                    for item in range(2, len(lines)):
-                        sql = "CALL AddData('%s',%s,'%s',%s,'%s')" % (UID, session, lines[item][0], lines[item][1], datetime)
-                        print "Sending..."
-                        connection.send(sql)
-                        connection.recieve()
+                        for item in range(2, len(lines)):
+                            sql = "CALL AddData('%s',%s,'%s',%s,'%s')" % (UID, session, lines[item][0], lines[item][1], datetime)
+                            print "Sending..."
+                            connection.send(sql)
+                            connection.recieve()
 
-                #Insert error-codes
+                    #Insert error-codes
 
-                # Start by setting all errors to inactive with procedure WipeError
-                if len(formattedData['Errors']) > 0:
-                    sql = "CALL WipeError('%s')" % (UID)
+                    # Start by setting all errors to inactive with procedure WipeError
+                    if len(formattedData['Errors']) > 0:
+                        sql = "CALL WipeError('%s')" % (UID)
                     
-                    print "Sending..."
-                    connection.send(sql)
-                    connection.recieve()
-
-                    # Now insert each error with a procedure
-                    for error in formattedData['Errors']:
-                        sql = "CALL AddError('%s','%s')" % (error,UID)
-                        
                         print "Sending..."
                         connection.send(sql)
                         connection.recieve()
-                else:
-                    print "no errors"
-                f.close()
+
+                        # Now insert each error with a procedure
+                        for error in formattedData['Errors']:
+                            sql = "CALL AddError('%s','%s')" % (error,UID)
+                        
+                            print "Sending..."
+                            connection.send(sql)
+                            connection.recieve()
+                    else:
+                        print "no errors"
+                    f.close()
             remove(mypath+"/"+currentfile)
 
         connection.send("")
