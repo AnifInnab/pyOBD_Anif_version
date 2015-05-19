@@ -69,18 +69,19 @@ class OBDPort:
              parity = par, stopbits = sb, bytesize = databits,timeout = to)
          except serial.SerialException as e:
              print (e)
-             time.sleep(2)
              self.State = 0
              self.close()
+             time.sleep(2)
              self.__init__(self.portname, 1, 7)
              return None
          print("Interface successfully " + self.port.portstr + " opened")
 
          print("Connecting to ECU...")
-         try:
+         try: 
             self.send_command("atz")   # initialize
-            time.sleep(1)
+            time.sleep(3)
          except serial.SerialException:
+            print("Failed sending ATZ command.\nReconnecting...")
             time.sleep(2)
             self.State = 0
             self.close()
@@ -256,6 +257,7 @@ class OBDPort:
 
              if(buffer == ""):
                 print("buffer is empty")
+
              return buffer
          else:
             print("PORT NOT CONNECTED...")
