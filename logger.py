@@ -9,30 +9,28 @@ import threading
 import platform
 import serial
 import gps
-#import gpsdData
-#\\\\.\\CNCB0
 
     
 
 class logger:
     def __init__(self, sessionID, userID):
-        time.sleep(5) #LET SLEEP
-        self.port = "/dev/ttyUSB0" #self.scanSerial() "/dev/pts/2" #
+        time.sleep(1) #LET SLEEP FOR SECURE STARTUP, CAN BE LOWERED
+        self.port = "/dev/ttyUSB0"
         self.obd = OBD_IO.OBDPort(self.port, 1, 5)
 
         
         print("Restarting GPS...")
         os.system("sudo killall gpsd")
-        print("OBD PORT: " + self.obd.getPortName())
-        if(self.obd.getPortName() == "/dev/ttyUSB0"):
+        print("OBD connected to: " + self.obd.getPortName())
+
+        if(self.obd.getPortName() == "/dev/ttyUSB0"): ## Connect next ttyUSB to GPS
             os.system("sudo gpsd /dev/ttyUSB1 -F /var/run/gpsd.sock")
         else:
             os.system("sudo gpsd /dev/ttyUSB0 -F /var/run/gpsd.sock")
 
         time.sleep(5) # LET GPS ESTABLISH FIX
 
-        # Listen on port 2947 (gpsd) of localhost
-        try:
+        try: ## IF GPS FAILS TO LOAD, RESTART
             self.session = gps.gps("localhost", "2947")
         except:
             os.system("sudo killall gpsd")
@@ -66,34 +64,7 @@ class logger:
             else:
                 print(obd_sensors.SENSORS[i+1].name + ":    NOT SUPPORTED")
         return carSens
-    def scanSerial(self):
-        """scan for available ports. return a list of serial names"""
-        portName = ""
-     #Enable Bluetooh connection
-        for i in range(10):
-          try:
-            s = serial.Serial("/dev/rfcomm"+str(i))
-            portName =  (str(s.port))
-            s.close()   # explicit close 'cause of delayed GC in java
-          except serial.SerialException:
-            pass
-     #Windows simulator
-        for i in range(10):
-          try:
-            s = serial.Serial("\\\\.\\CNCB"+str(i))
-            portName = (str(s.port))
-            s.close()   # explicit close 'cause of delayed GC in java
-          except serial.SerialException:
-            pass
-     # Enable USB connection
-        for i in range(256):
-          try:
-            s = serial.Serial("/dev/ttyUSB"+str(i))
-            portName =(str(s.port))
-            s.close()   # explicit close 'cause of delayed GC in java
-          except serial.SerialException:
-            pass
-        return portName
+
     def writePidToFile(self, command, result):
         self.seq += "[" + command + "," + result + "]"
     def getDTC(self):
@@ -119,8 +90,8 @@ class logger:
             self.session.fix.longitude
             print("Setting up GPS...")
     def startLogging(self):
-        nineSec = 0
-        fiveSec = 0
+        iatTimer = 0
+        coolTimer = 0
         sessionF = open("session.txt", "w")
         sessionF.write(str(self.sessionID))
         sessionF.close()
@@ -145,10 +116,10 @@ class logger:
                 self.writePidToFile("SID", str(self.sessionID))
                 self.seq += "+\n"
 
-                #self.obd.send_command("0101")
-                #nrOfDTC = self.obd.nrOfDTC(self.obd.get_result())
-                #print(nrOfDTC)
-                '''
+                self.obd.send_command("0101")
+                nrOfDTC = self.obd.nrOfDTC(self.obd.get_result())
+                print(nrOfDTC)
+                
                 if nrOfDTC != "NODATA":
                     self.obd.send_command("03")
                     dtc = self.obd.interpret_DTCresult( self.obd.get_result() )
@@ -156,14 +127,12 @@ class logger:
                     for i in range (int(nrOfDTC)):
                         print("Engine DTC errorcode: " + dtcCodes[i] )
                         self.writePidToFile("ERROR", dtcCodes[i])
-                '''
                 self.seq += "+\n"
 
                 while nrOfReq < 10:
                     self.timeGone = int(((time.time())-startTime)) #Current time - starting time
                     if self.timeGone>temptime:
                         self.writePidToFile("TIME", self.timestamp(2))
-                        #self.writePidToFile("GPS", "0.0-0.0") #SIM
                         self.writePidToFile("GPS", (str(self.session.fix.latitude) + "-" + str(self.session.fix.longitude)))
                         self.session.next()
 
@@ -177,18 +146,16 @@ class logger:
                             sensorvalue = self.obd.get_sensor_value(obd_sensors.SENSORS[16]) #maf
                             self.writePidToFile("0110", str(sensorvalue))
                             curMAF = sensorvalue
-                        
-                        if nineSec == 9:
-                                iatSensor = self.obd.get_sensor_value(obd_sensors.SENSORS[14]) #intake air temprature update every 5s
+                        if iatTimer == 3:
+                                iatSensor = self.obd.get_sensor_value(obd_sensors.SENSORS[14]) #intake air temprature update every 3s
                         if(carSens[13] == "1"):
                                 self.writePidToFile("010F", str(iatSensor))
-                                nineSec = 0
-                        if fiveSec == 5:
-                                coolTemp = self.obd.get_sensor_value(obd_sensors.SENSORS[5]) #coolant temprature update every 8s
-                                fiveSec = 0
+                                iatTimer = 0
+                        if coolTimer == 7:
+                                coolTemp = self.obd.get_sensor_value(obd_sensors.SENSORS[5]) #coolant temprature update every 7s
                         if(carSens[4] == "1"):
                                 self.writePidToFile("0105", str(coolTemp))  
-                                  
+                                coolTimer = 0
                         self.seq += "+\n"
                         nrOfReq += 1
                         temptime = self.timeGone
@@ -201,11 +168,10 @@ class logger:
                 self.seq = ""
                 file.close()
                 shutil.move("/home/pi/pyOBD_Anif_version/" + filename, "/home/pi/pyOBD_Anif_version/logFiles/" + filename )
-                #shutil.move("C:/Users/Snif/Documents/Visual Studio 2013/Projects/pyOBD_Anif_version/pyOBD_Anif_version/" + filename, "C:/Users/Snif/Documents/Visual Studio 2013/Projects/pyOBD_Anif_version/pyOBD_Anif_version/logFiles/" + filename )
                 
                 self.nrOfResponses += 1
-                fiveSec += 1
-                nineSec += 1
+                iatTimer += 1
+                coolTimer += 1
                 semiSession += 1
 
 

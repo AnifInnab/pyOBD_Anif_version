@@ -56,9 +56,8 @@ while 1:
             dataEntries = []
 
              # Files is saved and can now be read
-            if os.path.getsize(mypath+"/"+currentfile) > 10:
+            if os.path.getsize(mypath+"/"+currentfile) > 2:
                 with open(mypath+"/"+currentfile, 'r') as f:
-
                     count = 0
                     for line in f.read().strip().split('+'):
                         # UID - ID code of raspberry

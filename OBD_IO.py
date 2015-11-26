@@ -11,6 +11,7 @@ GET_DTC_COMMAND   = "03"
 CLEAR_DTC_COMMAND = "04"
 GET_FREEZE_DTC_COMMAND = "07"
 
+##Should be placed in loggerfile
 def decrypt_dtc_code(code, nrOfDTC):
     """Returns the 5-digit DTC code from hex encoding"""
     dtc = []
@@ -122,7 +123,6 @@ class OBDPort:
              self.close()
              self.__init__(self.portname, 1, 7)
          
-         #was outcommented
          if (str(ready) == ""):
              ready = "EMPTY BUFFERT"
 
